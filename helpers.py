@@ -24,25 +24,24 @@ def get_colored_input(prompt: str, color: str = "light_magenta") -> str:
     return input(color_prefix + prompt + Style.RESET_ALL).strip()
 
 
-def search_movie(movie_dict: dict[str, float]) -> None:
+def search_movie(movie_dict: dict[str, dict]) -> None:
     """
     Searches for movies that contain a given string and displays matching results.
 
-    :param movie_dict: Dictionary of movies and ratings.
+    :param movie_dict: Dictionary of movies and details.
     :return: None
     """
-    search_query = get_colored_input("Enter part of movie name:")
-    lowercase_search_query = search_query.lower()
+    search_query = get_colored_input("Enter part of movie name:").lower()
+    matches = [
+        (movie, details)
+        for movie, details in movie_dict.items()
+        if search_query in movie.lower()
+    ]
 
-    found = False
-    for movie, movie_details in movie_dict.items():
-        lower_movie_name = movie.lower()
-        print(movie_details)
-        if lowercase_search_query in lower_movie_name:
-            print_movie(movie, movie_details)
-            found = True
-
-    if not found:
+    if matches:
+        for movie, details in matches:
+            print_movie(movie, details)
+    else:
         print_colored_output("No search result.", "red")
 
 

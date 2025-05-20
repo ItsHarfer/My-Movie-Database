@@ -1,6 +1,6 @@
 from colorama import Style
 
-from config import ASTERISK_COUNT, COLOR_MAP, RATING_LIMIT
+from config import ASTERISK_COUNT, COLOR_MAP, RATING_LIMIT, MENU_OPTIONS
 from analysis import (
     get_calculated_average_rate,
     get_calculated_median_rate,
@@ -41,21 +41,8 @@ def print_menu_options() -> None:
 
     :return: None
     """
-    menu_option_list = [
-        "Quit application",
-        "List movies",
-        "Add movie",
-        "Delete movie",
-        "Update movie",
-        "Stats",
-        "Random movie",
-        "Search movie",
-        "Movies sorted by rating",
-        "Create Rating Histogram",
-    ]
-
     print_title("Menu", ASTERISK_COUNT)
-    for index, option in enumerate(menu_option_list, start=0):
+    for index, option in enumerate(MENU_OPTIONS, start=0):
         print(f"{index} - ", end="")
         print_colored_output(f"{option}", "light_blue")
     print()
@@ -145,4 +132,4 @@ def print_multiple_movies(movie_dict: dict) -> None:
             movie_title + f" ({movie_details["release"]})", "yellow", end=""
         )
         print(f" Rating: {movie_details["rating"]}")
-        print()
+    print()
