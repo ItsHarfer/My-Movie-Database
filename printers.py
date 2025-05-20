@@ -1,7 +1,7 @@
 from colorama import Style
 
-from config import ASTERISK_COUNT, COLOR_MAP
-from statistics import (
+from config import ASTERISK_COUNT, COLOR_MAP, RATING_LIMIT
+from analysis import (
     get_calculated_average_rate,
     get_calculated_median_rate,
     get_all_movies_extremes_by_mode,
@@ -118,17 +118,18 @@ def print_random_movie(name: str, rating: float) -> None:
     print_colored_output(f"{rating}", "light_yellow")
 
 
-def print_movie(movie: dict) -> None:
+def print_movie(movie_title: str, movie_details: dict) -> None:
     """
     Prints the title and rating of a single movie in a formatted and colored output.
 
-    :param movie: The name of the movie.
-    :param rating: The rating of the movie.
+    :param movie_title: The name of the movie.
+    :param movie_details:
     :return: None
     """
-    print(movie)
-    print_colored_output(f"- {title} ({release}): ", "light_blue", end="")
-    print_colored_output(f"{rating}", "light_yellow")
+    movie_rating = movie_details["rating"]
+    movie_release = movie_details["release"]
+    print_colored_output(f"- {movie_title} ({movie_release}): ", "light_blue", end="")
+    print_colored_output(f" Rating: {movie_rating}/{RATING_LIMIT}", "light_yellow")
 
 
 def print_multiple_movies(movie_dict: dict) -> None:
@@ -139,6 +140,9 @@ def print_multiple_movies(movie_dict: dict) -> None:
     :param movie_list: List of movie titles, ratings and release years.
 
     """
-    for movie in movie_dict.items():
-        for category in movie:
-            print(category)
+    for movie_title, movie_details in movie_dict.items():
+        print_colored_output(
+            movie_title + f" ({movie_details["release"]})", "yellow", end=""
+        )
+        print(f" Rating: {movie_details["rating"]}")
+        print()

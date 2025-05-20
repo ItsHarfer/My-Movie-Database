@@ -12,7 +12,7 @@ def quit_application():
     sys.exit(0)
 
 
-def get_colored_input(prompt: str, color: str = 'light_magenta') -> str:
+def get_colored_input(prompt: str, color: str = "light_magenta") -> str:
     """
     Prompts the user for input and output with colored text.
 
@@ -20,7 +20,7 @@ def get_colored_input(prompt: str, color: str = 'light_magenta') -> str:
     :param color: Optional color name (default: 'light_magenta').
     :return: Trimmed user input as string.
     """
-    color_prefix = COLOR_MAP.get(color, '')
+    color_prefix = COLOR_MAP.get(color, "")
     return input(color_prefix + prompt + Style.RESET_ALL).strip()
 
 
@@ -31,18 +31,19 @@ def search_movie(movie_dict: dict[str, float]) -> None:
     :param movie_dict: Dictionary of movies and ratings.
     :return: None
     """
-    search_query = get_colored_input('Enter part of movie name:')
+    search_query = get_colored_input("Enter part of movie name:")
     lowercase_search_query = search_query.lower()
 
     found = False
-    for movie, rating in movie_dict.items():
+    for movie, movie_details in movie_dict.items():
         lower_movie_name = movie.lower()
+        print(movie_details)
         if lowercase_search_query in lower_movie_name:
-            print_movie(movie, rating)
+            print_movie(movie, movie_details)
             found = True
 
     if not found:
-        print_colored_output('No search result.', 'red')
+        print_colored_output("No search result.", "red")
 
 
 def get_movies_sorted_by_rating(movie_dict: dict[str, float]) -> dict[str, float]:
@@ -53,7 +54,9 @@ def get_movies_sorted_by_rating(movie_dict: dict[str, float]) -> dict[str, float
     :return: Dictionary of movies sorted by rating from highest to lowest.
     """
     sort_by_rating = lambda movie_item: movie_item[1]
-    sorted_movie_dict = dict(sorted(movie_dict.items(), key=sort_by_rating, reverse=True))
+    sorted_movie_dict = dict(
+        sorted(movie_dict.items(), key=sort_by_rating, reverse=True)
+    )
     return sorted_movie_dict
 
 
@@ -64,31 +67,35 @@ def get_rating_histogram(movie_dict: dict[str, float]) -> None:
     :param movie_dict: Dictionary of movies and ratings.
     :return: None (but a .png file is saved).
     """
-    file_name = get_colored_input('Please name your histogram (e.g.: ratings.png): ')
-    if not file_name.endswith('.png'):
-        file_name += '.png'
+    file_name = get_colored_input("Please name your histogram (e.g.: ratings.png): ")
+    if not file_name.endswith(".png"):
+        file_name += ".png"
 
     movie_names_list = list(movie_dict.keys())
     movie_rating_list = list(movie_dict.values())
 
     plt.barh(movie_names_list, movie_rating_list)  # horizontal bar diagram
 
-    plt.xlabel('Rating')
-    plt.ylabel('Movie')
-    plt.title('X-Rating')
+    plt.xlabel("Rating")
+    plt.ylabel("Movie")
+    plt.title("X-Rating")
 
     plt.tight_layout()
     plt.savefig(file_name)
-    print_colored_output(f'Horizontal bar diagram saved in "{file_name}"', 'green')
+    print_colored_output(f'Horizontal bar diagram saved in "{file_name}"', "green")
 
 
-def get_colored_numeric_input_float(prompt: str, start_range: int, end_range: int) -> float:
+def get_colored_numeric_input_float(
+    prompt: str, start_range: int, end_range: int
+) -> float:
     while True:
         user_input = get_colored_input(prompt)
         try:
             number = float(user_input)
             if start_range <= number <= end_range:
                 return number
-            print_colored_output(f'Please enter a number between {start_range} and {end_range}.', 'red')
+            print_colored_output(
+                f"Please enter a number between {start_range} and {end_range}.", "red"
+            )
         except ValueError:
-            print_colored_output('Please provide a valid number.', 'red')
+            print_colored_output("Please provide a valid number.", "red")
