@@ -18,6 +18,7 @@ GOOGLE_MAPS_URL = "https://maps.google.com/"
 COLOR_BLUE = "\033[94m"
 COLOR_RESET = "\033[0m"
 
+
 # Padding width for aligned command display and formatting
 LABEL_PADDING = 25
 ASTERISK_COUNT = 10
@@ -41,6 +42,9 @@ COLOR_MAP = {
     "light_cyan": Style.BRIGHT + Fore.CYAN,
     "light_white": Style.BRIGHT + Fore.WHITE,
 }
+# ====================
+# Menu, Selection and Range
+# ====================
 
 MENU_OPTIONS = [
     "Quit application",
@@ -54,6 +58,10 @@ MENU_OPTIONS = [
     "Movies sorted by rating",
     "Create Rating Histogram",
 ]
+
+MENU_MIN_INDEX = 0
+MENU_MAX_INDEX = len(MENU_OPTIONS) - 1
+
 
 MOVIES = {
     "Pulp Fiction": {"rating": 9.5, "release": 1994},

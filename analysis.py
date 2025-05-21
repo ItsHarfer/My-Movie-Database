@@ -1,37 +1,35 @@
 import printers as printer
 
 
-def get_calculated_average_rate(movie_dict: dict[str, float]) -> float:
+def get_calculated_average_rate(movie_dict: dict[str, dict[str, float | int]]) -> float:
     """
     Calculates the average rating of all movies.
 
     :param movie_dict: Dictionary of movies and ratings.
     :return: Float average rating.
     """
-    movies_in_database = len(movie_dict)
-    rating_sum = get_movie_rating_sum(movie_dict)
-    average_rate = rating_sum / movies_in_database
-    return average_rate
+    return get_movie_rating_sum(movie_dict) / len(movie_dict)
 
 
-def get_movie_rating_sum(movie_dict: dict[str, float]) -> float:
+def get_movie_rating_sum(movie_dict: dict[str, dict[str, float | int]]) -> float:
     """
     Calculates the total sum of all movie ratings in the database.
 
     :param movie_dict: Dictionary of movies and their ratings.
     :return: Float sum of all ratings.
     """
-    return sum(movie_dict.values())
+    return sum(details["rating"] for details in movie_dict.values())
 
 
-def get_calculated_median_rate(movie_dict: dict[str, float]) -> float:
+def get_calculated_median_rate(movie_dict: dict[str, dict[str, float | int]]) -> float:
     """
     Calculates the median rating of all movies in the database.
 
     :param movie_dict: Dictionary of movie titles and their ratings.
     :return: The median rating as a float.
     """
-    sorted_rate_list = list(movie_dict.values())
+
+    sorted_rate_list = list(details["rating"] for details in movie_dict.values())
     sorted_rate_list.sort()
     movies_in_database = len(movie_dict)
 
@@ -49,28 +47,29 @@ def get_calculated_median_rate(movie_dict: dict[str, float]) -> float:
     return median
 
 
-def get_all_movies_extremes_by_mode(movie_dict: dict[str, float], mode: str) -> dict[str, float] | None:
+def get_all_movies_extremes_by_mode(
+    movie_dict: dict[str, dict[str, float | int]], mode: str
+) -> dict[str, dict[str, float | int]] | None:
     """
     Finds all movies with either the highest or lowest rating.
 
-    :param movie_dict: Dictionary of movies and ratings.
+    :param movie_dict: Dictionary of movies and their details.
     :param mode: Either 'best' or 'worst'.
-    :return: Dictionary of matched movies and their ratings.
+    :return: Dictionary of matched movies and their details.
     """
-    if mode == 'best':
-        movie = max(movie_dict, key=movie_dict.get)
-    elif mode == 'worst':
-        movie = min(movie_dict, key=movie_dict.get)
-    else:
-        printer.print_colored_output('Mode must be "best" or "worst".', 'red')
+    if not movie_dict:
         return None
 
-    all_movies = {}
-    movie_rating = movie_dict[movie]
+    if mode == "best":
+        extreme_rating = max(details["rating"] for details in movie_dict.values())
+    elif mode == "worst":
+        extreme_rating = min(details["rating"] for details in movie_dict.values())
+    else:
+        printer.print_colored_output('Mode must be "best" or "worst".', "red")
+        return None
 
-    # Add all movies that have the same rating as the best/worst movie
-    for movie, rating in movie_dict.items():
-        if movie_rating == rating:
-            all_movies[movie] = rating
-
-    return all_movies
+    return {
+        title: details
+        for title, details in movie_dict.items()
+        if details["rating"] == extreme_rating
+    }

@@ -22,7 +22,7 @@ def print_title(title_name: str, star_count: int) -> None:
     )
 
 
-def print_movies_in_database(movie_dict: dict[str, float]) -> None:
+def print_movies_in_database(movie_dict: dict[str, dict[str, float | int]]) -> None:
     """
     Displays the total number of movies and prints each movie with its rating.
 
@@ -32,7 +32,7 @@ def print_movies_in_database(movie_dict: dict[str, float]) -> None:
     total_movie_count = len(movie_dict)
     print_colored_output(f"\n{total_movie_count} ", "light_yellow", end="")
     print_colored_output("movies in total", "green")
-    print_multiple_movies(movie_dict)
+    print_movies(movie_dict)
 
 
 def print_menu_options() -> None:
@@ -42,7 +42,7 @@ def print_menu_options() -> None:
     :return: None
     """
     print_title("Menu", ASTERISK_COUNT)
-    for index, option in enumerate(MENU_OPTIONS, start=0):
+    for index, option in enumerate(MENU_OPTIONS):
         print(f"{index} - ", end="")
         print_colored_output(f"{option}", "light_blue")
     print()
@@ -61,7 +61,9 @@ def print_colored_output(prompt: str, color: str = "cyan", end: str = "\n") -> N
     print(color_prefix + prompt + Style.RESET_ALL, end=end)
 
 
-def print_movies_statistics_in_database(movie_dict: dict[str, float]) -> None:
+def print_movies_statistics_in_database(
+    movie_dict: dict[str, dict[str, float | int]],
+) -> None:
     """
     Calculates and displays statistics about the movies in the database,
     including average rating, median rating, best and worst movies.
@@ -80,56 +82,26 @@ def print_movies_statistics_in_database(movie_dict: dict[str, float]) -> None:
 
     print_title("Movie Statistics", 3)
     print_colored_output(f"Average rating: ", "blue", end="")
-    print_colored_output(f"{average_rate}", "light_yellow")
+    print_colored_output(f"{average_rate:.2f}", "light_yellow")
 
     print_colored_output(f"Median rating: ", "blue", end="")
-    print_colored_output(f"{median_rate}", "light_yellow")
+    print_colored_output(f"{median_rate:.2f}", "light_yellow")
 
     print_colored_output(f"Best movie(s): ", "blue")
-    print_multiple_movies(best_movies)
+    print_movies(best_movies)
 
     print_colored_output(f"Worst movie(s): ", "blue")
-    print_multiple_movies(worst_movies)
+    print_movies(worst_movies)
 
 
-def print_random_movie(name: str, rating: float) -> None:
+def print_movies(movie_dict: dict[str, dict[str, float | int]]) -> None:
     """
-    Displays a randomly selected movie and its rating.
+    Prints movie(s) and their ratings from the given dictionary.
 
-    :param name: The title of the randomly selected movie.
-    :param rating: The rating of the selected movie.
-    :return: None
+    :param movie_dict: Dictionary of movie titles and their details.
     """
-    print_colored_output(f"Your movie for tonight: ", "light_blue")
-    print_colored_output(f"- {name}: ", end="")
-    print_colored_output(f"{rating}", "light_yellow")
-
-
-def print_movie(movie_title: str, movie_details: dict) -> None:
-    """
-    Prints the title and rating of a single movie in a formatted and colored output.
-
-    :param movie_title: The name of the movie.
-    :param movie_details:
-    :return: None
-    """
-    movie_rating = movie_details["rating"]
-    movie_release = movie_details["release"]
-    print_colored_output(f"- {movie_title} ({movie_release}): ", "light_blue", end="")
-    print_colored_output(f" Rating: {movie_rating}/{RATING_LIMIT}", "light_yellow")
-
-
-def print_multiple_movies(movie_dict: dict) -> None:
-    """
-    Prints all movies and their ratings from the given dictionary.
-
-    :param movie_dict:
-    :param movie_list: List of movie titles, ratings and release years.
-
-    """
-    for movie_title, movie_details in movie_dict.items():
-        print_colored_output(
-            movie_title + f" ({movie_details["release"]})", "yellow", end=""
-        )
-        print(f" Rating: {movie_details["rating"]}")
-    print()
+    for title, details in movie_dict.items():
+        rating = details["rating"]
+        release = details["release"]
+        print_colored_output(f"- {title} ({release}): ", "light_blue", end="")
+        print_colored_output(f"Rating: {rating}/{RATING_LIMIT}", "light_yellow")

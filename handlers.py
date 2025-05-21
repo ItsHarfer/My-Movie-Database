@@ -21,8 +21,7 @@ from movie_crud import (
 from printers import (
     print_movies_in_database,
     print_movies_statistics_in_database,
-    print_random_movie,
-    print_multiple_movies,
+    print_movies,
 )
 
 
@@ -67,8 +66,8 @@ def handle_show_movie_statistics(_, movie_data):
 
 
 def handle_random_movie(_, movie_data):
-    random_movie_name, random_movie_rating = get_random_movie(movie_data)
-    print_random_movie(random_movie_name, random_movie_rating)
+    random_movie = get_random_movie(movie_data)
+    print_movies(random_movie)
 
 
 def handle_search_movie(_, movie_data):
@@ -76,7 +75,7 @@ def handle_search_movie(_, movie_data):
 
 
 def handle_sorted_movies_by_rating(_, movie_data):
-    print_multiple_movies(get_movies_sorted_by_rating(movie_data))
+    print_movies(get_movies_sorted_by_rating(movie_data))
 
 
 def handle_rating_histogram(_, movie_data):

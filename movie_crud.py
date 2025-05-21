@@ -4,25 +4,28 @@
 import datetime
 from random import Random
 
-from helpers import get_colored_input, get_colored_numeric_input_float
+from helpers import (
+    get_colored_input,
+    get_colored_numeric_input_float,
+    get_movie_from_database,
+    get_valid_movie_rating,
+)
 from printers import print_colored_output
 
 
-def get_random_movie(movie_dict: dict[str, float]) -> tuple[str, float]:
+def get_random_movie(
+    movie_dict: dict[str, dict[str, float | int]],
+) -> dict[str, dict[str, float | int]]:
     """
     Selects a random movie from the database.
 
     :param movie_dict: Dictionary of movies and ratings.
     :return: Tuple (movie_name, movie_rating).
     """
-    movies_count_to_index = len(movie_dict) - 1
-    movies_as_list = list(movie_dict.keys())
-
-    random_number = Random().randint(0, movies_count_to_index)
-
-    random_movie_name = movies_as_list[random_number]
-    random_movie_rating = movie_dict[random_movie_name]
-    return random_movie_name, random_movie_rating
+    movies_as_list = list(movie_dict.items())
+    random_index = Random().randint(0, len(movies_as_list) - 1)
+    title, details = movies_as_list[random_index]
+    return {title: details}
 
 
 def add_movie_to_database(movie_dict: dict[str, dict]) -> None:
@@ -72,34 +75,17 @@ def delete_movie_from_database(movie_dict: dict[str, float]) -> None:
     if movie_is_in_database:
         del movie_dict[movie_to_delete]
         print_colored_output(
-            f'"{movie_to_delete}" successfully deleted from the database.', "green"
+            f'🗑️ "{movie_to_delete}" successfully deleted from the database.', "green"
         )
     else:
         print_colored_output("Movie is not in the database. Try again.", "red")
 
 
-def update_movie_in_database(movie_dict: dict[str, float]) -> None:
-    """
-    Updates the rating of an existing movie in the database if the movie is found.
-
-    :param movie_dict: Dictionary of movies and their ratings.
-    :return: None
-    """
-    movie_is_updated = False
-    while not movie_is_updated:
-        movie_to_update = get_colored_input(
-            "Enter the name of the movie you want to update: "
-        )
-        movie_is_in_database = movie_to_update in movie_dict
-
-        if movie_is_in_database:
-            print_colored_output(f'"{movie_to_update}" found! ', "green")
-            update_movie_rating = get_colored_numeric_input_float(
-                "Enter the new rating for the movie: ", 0, 10
-            )
-            movie_dict[movie_to_update] = update_movie_rating
-            print_colored_output(f"{movie_to_update} updated!", "green")
-            movie_is_updated = True
-
-        else:
-            print_colored_output("Movie not found. Please try again.", "red")
+def update_movie_in_database(movie_dict: dict[str, dict]) -> None:
+    movie_name = get_movie_from_database(movie_dict)
+    try:
+        new_rating = get_valid_movie_rating()
+        movie_dict[movie_name]["rating"] = new_rating
+        print_colored_output(f'✅ "{movie_name}" updated!', "green")
+    except ValueError:
+        pass  # Fehlerausgabe erfolgt bereits in get_valid_movie_rating

@@ -4,7 +4,7 @@ from colorama import Style
 from matplotlib import pyplot as plt
 
 from config import COLOR_MAP
-from printers import print_colored_output, print_movie
+from printers import print_colored_output, print_movies
 
 
 def quit_application():
@@ -24,37 +24,40 @@ def get_colored_input(prompt: str, color: str = "light_magenta") -> str:
     return input(color_prefix + prompt + Style.RESET_ALL).strip()
 
 
-def search_movie(movie_dict: dict[str, dict]) -> None:
+def search_movie(movie_dict: dict[str, dict[str, float | int]]) -> None:
     """
     Searches for movies that contain a given string and displays matching results.
 
-    :param movie_dict: Dictionary of movies and details.
+    :param movie_dict: Dictionary of movies and details (title as key, rating and release year as values).
     :return: None
     """
     search_query = get_colored_input("Enter part of movie name:").lower()
-    matches = [
-        (movie, details)
-        for movie, details in movie_dict.items()
-        if search_query in movie.lower()
-    ]
+    matches = dict(
+        [
+            (movie, details)
+            for movie, details in movie_dict.items()
+            if search_query in movie.lower()
+        ]
+    )
 
     if matches:
-        for movie, details in matches:
-            print_movie(movie, details)
+        print_movies(matches)
     else:
         print_colored_output("No search result.", "red")
 
 
-def get_movies_sorted_by_rating(movie_dict: dict[str, float]) -> dict[str, float]:
+def get_movies_sorted_by_rating(
+    movie_dict: dict[str, dict[str, float | int]],
+) -> dict[str, dict[str, float | int]]:
     """
     Sorts the movies by their rating in descending order.
 
     :param movie_dict: Dictionary of movies and ratings.
     :return: Dictionary of movies sorted by rating from highest to lowest.
     """
-    sort_by_rating = lambda movie_item: movie_item[1]
+    details_rating = lambda details: details[1]["rating"]
     sorted_movie_dict = dict(
-        sorted(movie_dict.items(), key=sort_by_rating, reverse=True)
+        sorted(movie_dict.items(), key=details_rating, reverse=True)
     )
     return sorted_movie_dict
 
@@ -71,7 +74,7 @@ def get_rating_histogram(movie_dict: dict[str, float]) -> None:
         file_name += ".png"
 
     movie_names_list = list(movie_dict.keys())
-    movie_rating_list = list(movie_dict.values())
+    movie_rating_list = list(details["rating"] for details in movie_dict.values())
 
     plt.barh(movie_names_list, movie_rating_list)  # horizontal bar diagram
 
@@ -81,7 +84,7 @@ def get_rating_histogram(movie_dict: dict[str, float]) -> None:
 
     plt.tight_layout()
     plt.savefig(file_name)
-    print_colored_output(f'Horizontal bar diagram saved in "{file_name}"', "green")
+    print_colored_output(f'✅ Horizontal bar diagram saved in "{file_name}"', "green")
 
 
 def get_colored_numeric_input_float(
@@ -98,3 +101,27 @@ def get_colored_numeric_input_float(
             )
         except ValueError:
             print_colored_output("Please provide a valid number.", "red")
+
+
+def get_valid_movie_rating() -> float:
+    try:
+        return get_colored_numeric_input_float(
+            "Enter the new rating for the movie: ", 0, 10
+        )
+    except ValueError:
+        print_colored_output(
+            "❌ Invalid input. Please enter a number between 0 and 10.", "red"
+        )
+        raise
+
+
+def get_movie_from_database(movie_dict: dict[str, dict]) -> str:
+    while True:
+        movie_to_update = get_colored_input(
+            "Enter the name of the movie you want to update: "
+        )
+        if movie_to_update in movie_dict:
+            print_colored_output(f'"✅ {movie_to_update}" found! ', "green")
+            return movie_to_update
+        else:
+            print_colored_output("❌ Movie not found. Please try again.", "red")
