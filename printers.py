@@ -1,10 +1,29 @@
+"""
+printers.py
+
+Provides functions for formatted and colored output in the movie database application.
+
+This module is responsible for all user-facing textual output, including:
+- Colored messages and prompts
+- Movie list display
+- Statistics and histogram feedback
+- Menu titles and labels
+
+Keeping all presentation logic in this module ensures separation of concerns
+and allows consistent formatting throughout the application.
+"""
+
 from colorama import Style
 
-from config import ASTERISK_COUNT, COLOR_MAP, RATING_LIMIT, MENU_OPTIONS
-from analysis import (
-    get_calculated_average_rate,
-    get_calculated_median_rate,
-    get_all_movies_extremes_by_mode,
+from config import (
+    COLOR_MAP,
+    RATING_LIMIT,
+    COLOR_TEXT,
+    COLOR_VALUES,
+    COLOR_SUCCESS,
+    COLOR_ERROR,
+    COLOR_TITLE,
+    COLOR_SUB_TITLE,
 )
 
 
@@ -18,37 +37,34 @@ def print_title(title_name: str, star_count: int) -> None:
     """
     print_ten_asterix = f"*" * star_count
     print_colored_output(
-        "\n" + print_ten_asterix + f" {title_name} " + print_ten_asterix, "light_yellow"
+        "\n" + print_ten_asterix + f" {title_name} " + print_ten_asterix, COLOR_TITLE
     )
 
 
-def print_movies_in_database(movie_dict: dict[str, dict[str, float | int]]) -> None:
+def print_movie_count(total_movie_count: int) -> None:
     """
-    Displays the total number of movies and prints each movie with its rating.
+    Prints the total number of movies currently stored in the database.
 
-    :param movie_dict: Dictionary of movie titles and their ratings.
+    :param total_movie_count: Count of all movies in the data
+    :return: None
+    """
+    print_colored_output(f"\n{total_movie_count} ", COLOR_VALUES, end="")
+    print_colored_output("movies in total", COLOR_SUCCESS)
+
+
+def print_all_movies(movie_dict: dict[str, dict[str, float | int]]) -> None:
+    """
+    Displays the total number of movies and prints each movie with its rating and release year.
+
+    :param movie_dict: Dictionary of movie titles and their release years and ratings.
     :return: None
     """
     total_movie_count = len(movie_dict)
-    print_colored_output(f"\n{total_movie_count} ", "light_yellow", end="")
-    print_colored_output("movies in total", "green")
+    print_movie_count(total_movie_count)
     print_movies(movie_dict)
 
 
-def print_menu_options() -> None:
-    """
-    Displays the main menu options for user interaction.
-
-    :return: None
-    """
-    print_title("Menu", ASTERISK_COUNT)
-    for index, option in enumerate(MENU_OPTIONS):
-        print(f"{index} - ", end="")
-        print_colored_output(f"{option}", "light_blue")
-    print()
-
-
-def print_colored_output(prompt: str, color: str = "cyan", end: str = "\n") -> None:
+def print_colored_output(prompt: str, color: str = COLOR_TEXT, end: str = "\n") -> None:
     """
     Prints the given text in the specified color using ANSI escape codes via colorama.
 
@@ -61,37 +77,50 @@ def print_colored_output(prompt: str, color: str = "cyan", end: str = "\n") -> N
     print(color_prefix + prompt + Style.RESET_ALL, end=end)
 
 
-def print_movies_statistics_in_database(
-    movie_dict: dict[str, dict[str, float | int]],
+def print_movies_statistics(
+    average_rate: float,
+    median_rate: float,
+    best_movies: dict[str, dict[str, float | int]],
+    worst_movies: dict[str, dict[str, float | int]],
 ) -> None:
     """
-    Calculates and displays statistics about the movies in the database,
+    Displays statistics about the movies in the database,
     including average rating, median rating, best and worst movies.
 
-    :param movie_dict: Dictionary of movie titles and their ratings.
+    :param average_rate: The average rating of all movies.
+    :param median_rate: The median rating of all movies.
+    :param best_movies: Dictionary of the best-rated movie(s) and their attributes.
+    :param worst_movies: Dictionary of the worst-rated movie(s) and their attributes.
     :return: None
     """
-    average_rate = get_calculated_average_rate(movie_dict)
-    median_rate = get_calculated_median_rate(movie_dict)
-    try:
-        best_movies = get_all_movies_extremes_by_mode(movie_dict, "best")
-        worst_movies = get_all_movies_extremes_by_mode(movie_dict, "worst")
-    except ValueError as e:
-        print_colored_output(str(e), "red")
-        return
+    title = "Movie Statistics"
+    print_title(title, len(title))
+    print_colored_output(f"Average rating: ", COLOR_SUB_TITLE, end="")
+    print_colored_output(f"{average_rate:.2f}", COLOR_VALUES)
 
-    print_title("Movie Statistics", 3)
-    print_colored_output(f"Average rating: ", "blue", end="")
-    print_colored_output(f"{average_rate:.2f}", "light_yellow")
+    print_colored_output(f"Median rating: ", COLOR_SUB_TITLE, end="")
+    print_colored_output(f"{median_rate:.2f}", COLOR_VALUES)
 
-    print_colored_output(f"Median rating: ", "blue", end="")
-    print_colored_output(f"{median_rate:.2f}", "light_yellow")
-
-    print_colored_output(f"Best movie(s): ", "blue")
+    print_colored_output(f"Best movie(s): ", COLOR_SUB_TITLE)
     print_movies(best_movies)
 
-    print_colored_output(f"Worst movie(s): ", "blue")
+    print_colored_output(f"Worst movie(s): ", COLOR_SUB_TITLE)
     print_movies(worst_movies)
+
+
+def print_movie(title: str, movie: dict) -> None:
+    """
+    Displays a formatted line with the movie's title, release year, and rating.
+
+    :param title: The title of the movie.
+    :param movie: Dictionary containing movie attributes like 'release', 'rating', and optional others.
+    :return: None
+    """
+    release = movie.get("release", "unknown")
+    rating = movie.get("rating", "unrated")
+
+    print_colored_output(f"- {title} ({release}): ", COLOR_TITLE, end="")
+    print_colored_output(f"Rating: {rating}/{RATING_LIMIT}", COLOR_VALUES)
 
 
 def print_movies(movie_dict: dict[str, dict[str, float | int]]) -> None:
@@ -101,7 +130,17 @@ def print_movies(movie_dict: dict[str, dict[str, float | int]]) -> None:
     :param movie_dict: Dictionary of movie titles and their details.
     """
     for title, details in movie_dict.items():
-        rating = details["rating"]
-        release = details["release"]
-        print_colored_output(f"- {title} ({release}): ", "light_blue", end="")
-        print_colored_output(f"Rating: {rating}/{RATING_LIMIT}", "light_yellow")
+        print_movie(title, details)
+
+
+def print_search_results(matches: dict[str, dict[str, float | int]]) -> None:
+    """
+    Prints the search results or a message if no match is found.
+
+    :param matches: Dictionary of matched movie titles and their attributes.
+    :return: None
+    """
+    if matches:
+        print_movies(matches)
+    else:
+        print_colored_output("❌ No search result.", COLOR_ERROR)

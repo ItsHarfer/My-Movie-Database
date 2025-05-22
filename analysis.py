@@ -1,3 +1,22 @@
+"""
+analysis.py
+
+Provides analysis and evaluation functions for the movie database application.
+
+This module includes logic for calculating statistical information such as:
+- Average rating
+- Median rating
+- Movies with the best or worst rating
+- Selecting a random movie
+
+The functions are designed to operate on the movie dictionary and are read-only:
+they do not modify the original data but instead return computed insights.
+
+Used primarily by handler functions for displaying meaningful evaluations to the user.
+"""
+
+from random import Random
+
 import printers as printer
 
 
@@ -29,8 +48,9 @@ def get_calculated_median_rate(movie_dict: dict[str, dict[str, float | int]]) ->
     :return: The median rating as a float.
     """
 
-    sorted_rate_list = list(details["rating"] for details in movie_dict.values())
-    sorted_rate_list.sort()
+    sorted_rate_list = sorted(
+        list(details["rating"] for details in movie_dict.values())
+    )
     movies_in_database = len(movie_dict)
 
     # Check if the number of movies is odd or even
@@ -73,3 +93,18 @@ def get_all_movies_extremes_by_mode(
         for title, details in movie_dict.items()
         if details["rating"] == extreme_rating
     }
+
+
+def get_random_movie(
+    movie_dict: dict[str, dict[str, float | int]],
+) -> dict[str, dict[str, float | int]]:
+    """
+    Selects a random movie from the database.
+
+    :param movie_dict: Dictionary of movies and ratings.
+    :return: Tuple (movie_name, movie_rating).
+    """
+    movies_as_list = list(movie_dict.items())
+    random_index = Random().randint(0, len(movies_as_list) - 1)
+    title, details = movies_as_list[random_index]
+    return {title: details}

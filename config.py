@@ -15,14 +15,24 @@ GOOGLE_MAPS_URL = "https://maps.google.com/"
 # ====================
 # CLI Styling (ANSI color codes)
 # ====================
-COLOR_BLUE = "\033[94m"
-COLOR_RESET = "\033[0m"
+COLOR_INPUT = "light_magenta"
+COLOR_TEXT = "cyan"
+COLOR_MENU_OPTIONS = "light_blue"
+COLOR_VALUES = "light_cyan"
+COLOR_SUCCESS = "green"
+COLOR_ERROR = "red"
+COLOR_TITLE = "yellow"
+COLOR_SUB_TITLE = "light_yellow"
 
 
 # Padding width for aligned command display and formatting
 LABEL_PADDING = 25
 ASTERISK_COUNT = 10
+
+RATING_BASE = 0
 RATING_LIMIT = 10
+
+FIRST_FILM_RELEASE = 1888
 
 COLOR_MAP = {
     # Normal colors
