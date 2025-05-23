@@ -28,7 +28,7 @@ from analysis import (
     get_all_movies_extremes_by_mode,
     get_random_movie,
 )
-from config import FIRST_FILM_RELEASE, RATING_BASE, RATING_LIMIT, COLOR_ERROR
+from config import FIRST_FILM_RELEASE, RATING_BASE, RATING_LIMIT, COLOR_ERROR, DATA_FILE
 from helpers import (
     quit_application,
     get_movies_sorted_by_attribute,
@@ -43,6 +43,7 @@ from movie_crud import (
     delete_movie,
     update_movie,
 )
+from movie_storage import save_movies
 from printers import (
     print_all_movies,
     print_movies_statistics,
@@ -101,6 +102,7 @@ def handle_add_movie(_, movies_dict: dict[str, dict[str, float | int]]) -> None:
     attributes = {"rating": new_movie_rating, "release": new_movie_release}
 
     add_movie(movies_dict, new_movie_name, attributes)
+    save_movies(movies_dict, DATA_FILE)
 
 
 def handle_delete_movie(_, movie_data: dict[str, dict[str, float | int]]) -> None:

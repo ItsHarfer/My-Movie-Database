@@ -3,7 +3,7 @@
 # ====================
 from colorama import Fore, Style
 
-DATA_FILE = "ships_data.json"
+DATA_FILE = "data.json"
 HISTOGRAM_FILE = "speed_histogram.png"
 INTERACTIVE_MAP_FILE = "ships_map.html"
 
