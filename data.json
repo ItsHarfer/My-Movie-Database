@@ -4,8 +4,8 @@
         "release": 1994
     },
     "The Room": {
-        "rating": 3.6,
-        "release": 2003
+        "rating": 2.0,
+        "release": 1972
     },
     "The Godfather": {
         "rating": 9.2,
@@ -34,5 +34,9 @@
     "Star Wars: Episode V": {
         "rating": 8.7,
         "release": 1980
+    },
+    "Interstellar": {
+        "rating": 10.0,
+        "release": 2014
     }
 }

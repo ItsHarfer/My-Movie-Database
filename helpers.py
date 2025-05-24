@@ -15,8 +15,8 @@ It acts as a support layer for the main application logic and improves code reus
 readability, and maintainability.
 """
 
+from datetime import datetime
 import sys
-
 from colorama import Style
 from matplotlib import pyplot as plt
 
@@ -151,6 +151,10 @@ def get_colored_numeric_input_float(
             )
 
 
+def get_current_year() -> int:
+    return datetime.now().year
+
+
 def find_movie(movie_dict: dict[str, dict]) -> str:
     """
     Prompts the user to enter a movie name and returns it if it exists in the database.
@@ -163,7 +167,7 @@ def find_movie(movie_dict: dict[str, dict]) -> str:
             "Enter the name of the movie you want to update: "
         )
         if movie_to_update in movie_dict:
-            print_colored_output(f'✅ "{movie_to_update}" found! ', "green")
+            print_colored_output(f'🔍 "{movie_to_update}" found! ', "green")
             return movie_to_update
         else:
             print_colored_output("❌ Movie not found. Please try again.", "red")

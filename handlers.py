@@ -37,13 +37,14 @@ from helpers import (
     find_movie,
     filter_movies_by_search_query,
     create_histogram_by_attribute,
+    get_current_year,
 )
 from movie_crud import (
     add_movie,
     delete_movie,
     update_movie,
 )
-from movie_storage import save_movies
+from movie_storage import save_movies, get_movie_list
 from printers import (
     print_all_movies,
     print_movies_statistics,
@@ -66,7 +67,7 @@ def handle_quit_application(_, __):
     quit_application()
 
 
-def handle_show_movies(_, movies_dict: dict[str, dict[str, float | int]]) -> None:
+def handle_show_movies(_, __) -> None:
     """
     Display a list of all unique countries represented by ships in the dataset.
 
@@ -74,16 +75,18 @@ def handle_show_movies(_, movies_dict: dict[str, dict[str, float | int]]) -> Non
     :param _: Unused parameter
     :return: None. Prints a sorted list of unique ship countries.
     """
+    movies = get_movie_list(DATA_FILE)
     title = "Movie list"
     print_title(title, len(title))
-    print_all_movies(movies_dict)
+    print_all_movies(movies)
 
 
-def handle_add_movie(_, movies_dict: dict[str, dict[str, float | int]]) -> None:
+def handle_add_movie(_, __) -> None:
     """
     Handles user input to add a new movie to the database,
     including its name, rating, and release year.
 
+    :param __: Unused parameter
     :param _: Unused parameter
     :param movies_dict: Dictionary of movie titles and their attribute dictionaries.
     :return: None
@@ -92,7 +95,7 @@ def handle_add_movie(_, movies_dict: dict[str, dict[str, float | int]]) -> None:
     new_movie_rating = get_colored_numeric_input_float(
         "Enter new movie rating (0-10): ", 0, 10
     )
-    current_year = datetime.date.today().year
+    current_year = get_current_year()
     new_movie_release = int(
         get_colored_numeric_input_float(
             "Enter new movie release year: ", FIRST_FILM_RELEASE, current_year
@@ -101,22 +104,20 @@ def handle_add_movie(_, movies_dict: dict[str, dict[str, float | int]]) -> None:
 
     attributes = {"rating": new_movie_rating, "release": new_movie_release}
 
-    add_movie(movies_dict, new_movie_name, attributes)
-    save_movies(movies_dict, DATA_FILE)
+    add_movie(new_movie_name, attributes)
 
 
-def handle_delete_movie(_, movie_data: dict[str, dict[str, float | int]]) -> None:
+def handle_delete_movie(_, __) -> None:
     """
     Handles user input to delete a movie from the database.
 
     :param _: Unused parameter (commonly required by menu handlers).
-    :param movie_data: Dictionary of movie titles and their attribute dictionaries.
     :return: None
     """
     movie_to_delete = get_colored_input(
         "Enter the name of the movie you want to delete: "
     )
-    delete_movie(movie_data, movie_to_delete)
+    delete_movie(movie_to_delete)
 
 
 def handle_update_movie(_, movie_dict: dict[str, dict[str, float | int]]) -> None:
@@ -131,7 +132,8 @@ def handle_update_movie(_, movie_dict: dict[str, dict[str, float | int]]) -> Non
     new_rating = get_colored_numeric_input_float(
         "Enter the new rating for the movie: ", RATING_BASE, RATING_LIMIT
     )
-    update_movie(movie_dict, movie_name, "rating", new_rating)
+
+    update_movie(movie_name, new_rating)
 
 
 def handle_show_movie_statistics(
