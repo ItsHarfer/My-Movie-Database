@@ -86,7 +86,7 @@ python main.py
 ## Author
 
 Martin Haferanke  
-GitHub: [@harfer](https://github.com/harfer)  
+GitHub: [@ItsHarfer](https://github.com/ItsHarfer)
 Email: `martin.haferanke@gmail.com`
 
 ---
