@@ -1,20 +1,19 @@
+from colorama import Fore, Style
+
 # ====================
 # File Paths
 # ====================
-from colorama import Fore, Style
-
-
 DATA_FILE = "data.json"
 HISTOGRAM_FILE = "speed_histogram.png"
 INTERACTIVE_MAP_FILE = "ships_map.html"
 
 # ====================
-# External URLs
+# External Resources
 # ====================
 GOOGLE_MAPS_URL = "https://maps.google.com/"
 
 # ====================
-# CLI Styling (ANSI color codes)
+# CLI Styling Configuration
 # ====================
 COLOR_INPUT = "light_magenta"
 COLOR_TEXT = "cyan"
@@ -25,18 +24,7 @@ COLOR_ERROR = "red"
 COLOR_TITLE = "yellow"
 COLOR_SUB_TITLE = "light_yellow"
 
-HISTOGRAM_WIDTH = 10
-HISTOGRAM_HEIGHT = 6
-
-# Padding width for aligned command display and formatting
-LABEL_PADDING = 25
-ASTERISK_COUNT = 10
-
-RATING_BASE = 0
-RATING_LIMIT = 10
-
-FIRST_FILM_RELEASE = 1888
-
+# Mapping of color names to colorama styles
 COLOR_MAP = {
     # Normal colors
     "red": Fore.RED,
@@ -55,9 +43,31 @@ COLOR_MAP = {
     "light_cyan": Style.BRIGHT + Fore.CYAN,
     "light_white": Style.BRIGHT + Fore.WHITE,
 }
-# ====================
-# Menu, Selection and Range
-# ====================
 
+# ====================
+# Histogram Configuration
+# ====================
+HISTOGRAM_WIDTH = 10
+HISTOGRAM_HEIGHT = 6
+LABEL_PADDING = 25
+
+# ====================
+# General Display Settings
+# ====================
+ASTERISK_COUNT = 10  # Used for visual emphasis in CLI
+
+# ====================
+# Rating / movie Settings
+# ====================
+RATING_BASE = 0
+RATING_LIMIT = 10
+FIRST_MOVIE_RELEASE = 1888
+
+# ====================
+# Menu Selection Limits
+# ====================
 MENU_MIN_INDEX = 0
 MENU_MAX_INDEX = 10
+
+# Commands that require movies to be present in movie_dict
+COMMANDS_REQUIRING_MOVIES = {1, 3, 4, 5, 6, 7, 8, 9, 10}

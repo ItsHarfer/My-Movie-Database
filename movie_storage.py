@@ -1,6 +1,18 @@
+"""
+movie_storage.py
+
+This module handles low-level storage operations for the movie database application.
+
+It provides functions to load and save movie data to and from a JSON file,
+and to perform CRUD operations (create, read, update, delete) on individual movie entries.
+
+Functions in this module interact directly with the configured data file and
+produce user-facing error messages for I/O and data access issues.
+"""
+
 import json
 
-from config import DATA_FILE, COLOR_ERROR, COLOR_SUCCESS
+from config import DATA_FILE, COLOR_ERROR
 from printers import print_colored_output
 
 
@@ -16,10 +28,16 @@ def get_movie_list(filename: str) -> dict[str, dict[str, float | int]]:
     """
     try:
         with open(filename, "r") as file:
-            all_data = json.load(file)
-        return dict(all_data)
-    except IOError as error:
-        print_colored_output(f"❌ Error loading movies from file: {error}", COLOR_ERROR)
+            content = file.read().strip()
+            if not content:
+                return {}
+            json_object = dict(json.loads(content))
+            return json_object
+
+    except (IOError, json.JSONDecodeError) as error:
+        print_colored_output(
+            f"❌ Error loading movies from JSON file: {error}", COLOR_ERROR
+        )
         return {}
 
 
@@ -58,23 +76,45 @@ def add_movie(title: str, attributes: dict[str, float | int]) -> None:
     save_movies(movies, DATA_FILE)
 
 
-def delete_movie(title):
+def delete_movie(title: str) -> None:
     """
-    Deletes a movie from the movies database.
-    Loads the information from the JSON file, deletes the movie,
-    and saves it. The function doesn't need to validate the input.
+    Deletes a movie from the movie database.
+
+    Loads the existing movie data from the JSON file, removes the specified movie
+    if it exists, and saves the updated data. If the movie is not found,
+    an error message is printed.
+
+    :param title: The title of the movie to be deleted.
+    :return: None
     """
     movies = get_movie_list(DATA_FILE)
-    del movies[title]
-    save_movies(movies, DATA_FILE)
+    try:
+        del movies[title]
+    except KeyError as error:
+        return print_colored_output(
+            f"❌ Cant delete movie. Error: {error}", COLOR_ERROR
+        )
+
+    return save_movies(movies, DATA_FILE)
 
 
-def update_movie(title, attribute, new_value):
+def update_movie(title: str, attribute: str, new_value: float | int) -> None:
     """
-    Updates a movie from the movies database.
-    Loads the information from the JSON file, updates the movie,
-    and saves it. The function doesn't need to validate the input.
+    Updates a specific attribute of a movie in the movies database.
+
+    Loads the existing movie data from the JSON file, updates the specified
+    attribute of the given movie, and saves the updated data back to the file.
+
+    :param title: The title of the movie to update.
+    :param attribute: The name of the attribute to update (e.g., "rating").
+    :param new_value: The new value to assign to the attribute.
+    :return: None
     """
     movies = get_movie_list(DATA_FILE)
-    movies[title][attribute] = new_value
-    save_movies(movies, DATA_FILE)
+    try:
+        movies[title][attribute] = new_value
+    except KeyError as error:
+        return print_colored_output(
+            f"❌ Cant update movie. Error: {error}", COLOR_ERROR
+        )
+    return save_movies(movies, DATA_FILE)

@@ -1,23 +1,20 @@
 """
 printers.py
 
-Provides functions for formatted and colored output in the movie database application.
+Handles all formatted and colored output for the movie database application.
 
-This module is responsible for all user-facing textual output, including:
-- Colored messages and prompts
-- Movie list display
-- Statistics and histogram feedback
-- Menu titles and labels
+This module centralizes presentation logic, including:
+- Displaying titles, prompts, and status messages with color
+- Printing movie data, statistics, and search results
+- Ensuring consistent visual formatting across the CLI
 
-Keeping all presentation logic in this module ensures separation of concerns
-and allows consistent formatting throughout the application.
+Separating these responsibilities helps maintain a clean structure and supports consistent UI behavior.
 """
 
 from colorama import Style
 
 from config import (
     COLOR_MAP,
-    RATING_LIMIT,
     COLOR_TEXT,
     COLOR_VALUES,
     COLOR_SUCCESS,
@@ -128,8 +125,11 @@ def print_movies(movie_dict: dict[str, dict[str, float | int]]) -> None:
 
     :param movie_dict: Dictionary of movie titles and their details.
     """
-    for title, details in movie_dict.items():
-        print_movie(title, details)
+    if not movie_dict:
+        print_colored_output("❌ No movies to print.", COLOR_ERROR)
+    else:
+        for title, details in movie_dict.items():
+            print_movie(title, details)
 
 
 def print_search_results(matches: dict[str, dict[str, float | int]]) -> None:
@@ -139,7 +139,7 @@ def print_search_results(matches: dict[str, dict[str, float | int]]) -> None:
     :param matches: Dictionary of matched movie titles and their attributes.
     :return: None
     """
-    if matches:
-        print_movies(matches)
-    else:
+    if not matches:
         print_colored_output("❌ No search result.", COLOR_ERROR)
+    else:
+        print_movies(matches)

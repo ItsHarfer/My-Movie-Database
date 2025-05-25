@@ -1,3 +1,16 @@
+"""
+menu_dispatcher.py
+
+This module defines the mapping between user menu command numbers and their corresponding
+handler functions and descriptions.
+
+The MOVIE_COMMAND_DISPATCHER dictionary connects each command number to a handler
+function and a label used for user-facing menus.
+
+This centralized mapping is used by the main menu loop to invoke appropriate functionality
+based on user input.
+"""
+
 from handlers import (
     handle_quit_application,
     handle_show_movies,

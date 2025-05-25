@@ -1,53 +1,73 @@
 """
 analysis.py
 
-Provides statistical and evaluation functions for the movie database application.
+Provides statistical and analytical functions for the movie database application.
 
-This module includes logic for calculating:
-- Average and median rating
-- Movies with the highest or lowest rating
+This module includes logic for calculating key metrics and insights such as:
+- Average and median movie ratings
+- Movies with the highest or lowest ratings
 - Random movie selection
-- Summing arbitrary numeric attributes
+- Summation of arbitrary numeric attributes
 
-All functions are read-only and operate on the movie dictionary without modifying it.
+These functions are read-only and do not modify the provided movie dictionary.
 
-These are used primarily by handler functions to present insights and statistics to the user.
+They are primarily invoked by handler functions to generate statistics and analysis
+outputs for user-facing features.
 """
 
 from random import Random
-
 import printers as printer
+from config import COLOR_ERROR
 
 
-def get_calculated_average_rate(movie_dict: dict[str, dict[str, float | int]]) -> float:
+def get_calculated_average_rate(
+    movie_dict: dict[str, dict[str, float | int]],
+) -> float | None:
     """
     Calculates the average rating of all movies.
 
     :param movie_dict: Dictionary of movies and ratings.
-    :return: Float average rating.
+    :return: The average rating as float, or None if the input is empty.
     """
+    if not movie_dict:
+        return printer.print_colored_output(
+            "❌ No movies in database to calculate.", COLOR_ERROR
+        )
+
     return get_sum(movie_dict, "rating") / len(movie_dict)
 
 
-def get_sum(movie_dict: dict[str, dict[str, float | int]], attribute: str) -> float:
+def get_sum(
+    movie_dict: dict[str, dict[str, float | int]], attribute: str
+) -> int | None:
     """
     Calculates the total sum of all values for the given attribute across all movies.
 
     :param movie_dict: Dictionary of movies and their attribute dictionaries.
     :param attribute: The attribute whose values should be summed (e.g., 'rating', 'release').
-    :return: Float sum of all values for the specified attribute.
-    :rtype: float
+    :return: The sum of all values for the specified attribute as int or float, or None if the input is empty.
     """
+    if not movie_dict:
+        return printer.print_colored_output(
+            "❌ No movies in database to calculate.", COLOR_ERROR
+        )
+
     return sum(details[attribute] for details in movie_dict.values())
 
 
-def get_calculated_median_rate(movie_dict: dict[str, dict[str, float | int]]) -> float:
+def get_calculated_median_rate(
+    movie_dict: dict[str, dict[str, float | int]],
+) -> None | float | int:
     """
     Calculates the median rating of all movies in the database.
 
     :param movie_dict: Dictionary of movie titles and their ratings.
-    :return: The median rating as a float.
+    :return: The median rating as a float or int, or None if the input is empty.
     """
+    if not movie_dict:
+        return printer.print_colored_output(
+            "❌ No movies in database to calculate.", COLOR_ERROR
+        )
 
     sorted_rate_list = sorted(
         list(details["rating"] for details in movie_dict.values())
@@ -75,18 +95,22 @@ def get_all_movies_extremes_by_mode(
     Finds all movies with either the highest or lowest rating.
 
     :param movie_dict: Dictionary of movies and their details.
-    :param mode: Either 'best' or 'worst'.
-    :return: Dictionary of matched movies and their details.
+    :param mode: Mode to search for extremes, must be either "best" or "worst".
+    :return: Dictionary of matched movies and their details, or None if the input is empty or mode is invalid.
     """
     if not movie_dict:
-        return None
+        return printer.print_colored_output(
+            "❌ No movies in database to calculate.", COLOR_ERROR
+        )
+
+    ratings = (details["rating"] for details in movie_dict.values())
 
     if mode == "best":
-        extreme_rating = max(details["rating"] for details in movie_dict.values())
+        extreme_rating = max(ratings)
     elif mode == "worst":
-        extreme_rating = min(details["rating"] for details in movie_dict.values())
+        extreme_rating = min(ratings)
     else:
-        printer.print_colored_output('Mode must be "best" or "worst".', "red")
+        printer.print_colored_output('Mode must be "best" or "worst".', COLOR_ERROR)
         return None
 
     return {
@@ -98,14 +122,21 @@ def get_all_movies_extremes_by_mode(
 
 def get_random_movie(
     movie_dict: dict[str, dict[str, float | int]],
-) -> dict[str, dict[str, float | int]]:
+) -> dict[str, dict[str, float | int]] | None:
     """
     Selects a random movie from the database.
 
     :param movie_dict: Dictionary of movies and ratings.
-    :return: Tuple (movie_name, movie_rating).
+    :return: Dictionary containing one randomly selected movie and its details, or None if the input is empty.
     """
+    if not movie_dict:
+        return printer.print_colored_output(
+            "❌ No movies in database to calculate.", COLOR_ERROR
+        )
+
     movies_as_list = list(movie_dict.items())
-    random_index = Random().randint(0, len(movies_as_list) - 1)
+    random_index = (
+        Random().randint(0, len(movies_as_list) - 1) if len(movies_as_list) >= 1 else 0
+    )
     title, details = movies_as_list[random_index]
     return {title: details}

@@ -1,16 +1,17 @@
-# Movie Rating CLI App
+<file name=0 path=README.md># My Movie Database Part 2
 
-A Python-based Command Line Interface (CLI) application for managing a local movie database. Users can add, view, edit, delete, and analyze movie entries. Data is persisted in a local JSON file.
+A Python-based Command Line Interface (CLI) application for managing a local movie database. Users can add, view, edit, delete, and analyze movie entries. All data is persisted in a local JSON file.
 
 ---
 
 ## Features
 
 - Create, Read, Update, Delete (CRUD) movie entries
-- Calculate average ratings
+- Calculate average and median ratings
 - Identify top-rated and lowest-rated movies
+- Generate rating histograms by attribute
 - Menu-based navigation system
-- JSON file-based data storage
+- Local JSON file storage
 
 ---
 
@@ -18,7 +19,7 @@ A Python-based Command Line Interface (CLI) application for managing a local mov
 
 - Python 3.10+
 - JSON for data persistence
-- Modular structure with clean separation of concerns
+- Modular structure with clear separation of concerns
 
 ---
 
@@ -28,14 +29,15 @@ A Python-based Command Line Interface (CLI) application for managing a local mov
 .
 ├── analysis.py           # Handles movie rating calculations
 ├── config.py             # Configuration and constants
-├── data.json             # JSON file used as a database
-├── data_io.py            # File I/O for loading and saving data
+├── data.json             # JSON file used as a local database
 ├── handlers.py           # Functions for user actions
 ├── helpers.py            # Helper functions (e.g., input validation)
 ├── main.py               # Entry point with CLI logic
 ├── menu.py               # Menu structure definition
-├── menu_dispatcher.py    # Routing menu selections to handlers
-├── movie_crud.py         # Core CRUD operations
+├── menu_dispatcher.py    # Routes menu selections to handler functions
+├── movie_crud.py         # Core CRUD logic for add/delete/update
+├── movie_storage.py      # File I/O for loading and saving movie data
+├── printers.py           # Colored and formatted output
 ```
 
 ---
@@ -45,13 +47,21 @@ A Python-based Command Line Interface (CLI) application for managing a local mov
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/movie-rating-cli.git
-cd movie-rating-cli
+git clone https://github.com/ItsHarfer/The-Movie-Project-Part-2.git
+cd The-Movie-Project-Part-2-main
 ```
 
 ### 2. Install Requirements
 
-No external packages needed – just make sure Python 3.10+ is installed.
+Install the required dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+*This project requires the following external libraries:*  
+- Colorama (for colored terminal output)  
+- Matplotlib (for generating rating histograms)  
 
 ### 3. Run the Application
 
@@ -77,7 +87,7 @@ python main.py
 
 Martin Haferanke  
 GitHub: [@harfer](https://github.com/harfer)  
-Email: `harfer@msnp.ninja`
+Email: `martin.haferanke@gmail.com`
 
 ---
 
@@ -87,4 +97,4 @@ This project is licensed under the MIT License.
 
 ---
 
-Built for learning, practicing Python, and exploring data handling.
+Built for learning, practicing Python, and exploring structured data processing with CLI tools.

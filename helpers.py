@@ -17,6 +17,7 @@ readability, and maintainability.
 
 from datetime import datetime
 import sys
+
 from colorama import Style
 from matplotlib import pyplot as plt
 
@@ -56,6 +57,16 @@ def get_colored_input(prompt: str, color: str = COLOR_INPUT) -> str:
 
 
 def get_type_validated_input(prompt: str, expected_type: type):
+    """
+    Prompts the user for input and converts it to the expected type.
+
+    Repeats the input prompt until the user provides a value that can be
+    converted to the specified data type (e.g., int, float).
+
+    :param prompt: Text shown to the user.
+    :param expected_type: The expected Python type (e.g., int, float, str).
+    :return: The converted input value.
+    """
     while True:
         user_input = get_colored_input(prompt)
         try:
@@ -100,6 +111,10 @@ def filter_movies_by_search_query(
     :param search_query: Lowercase string to search for within movie titles.
     :return: Dictionary of matching movie titles and their attributes.
     """
+    if not movie_dict:
+        print_colored_output("⚠️ No movies available to search.", COLOR_ERROR)
+        return {}
+
     return {
         title: details
         for title, details in movie_dict.items()
@@ -122,6 +137,9 @@ def filter_movies_by_attributes(
     :param end_year: Latest release year to include.
     :return: None
     """
+    if not movie_dict:
+        return print_colored_output("❌ No movies available to filter.", COLOR_ERROR)
+
     filtered_movies = {
         title: details
         for title, details in movie_dict.items()
@@ -132,14 +150,16 @@ def filter_movies_by_attributes(
         print_colored_output(
             "🔍 No matching movies found. Try adjusting your filter.", COLOR_ERROR
         )
+        return None
     else:
         print_title("Filtered movies")
         print_movies(filtered_movies)
+        return None
 
 
 def get_movies_sorted_by_attribute(
     movie_dict: dict[str, dict[str, float | int]], attribute: str, descending=True
-) -> dict[str, dict[str, float | int]]:
+) -> dict[str, dict[str, float | int]] | None:
     """
     Sorts the movies by a given numeric attribute.
 
@@ -152,6 +172,9 @@ def get_movies_sorted_by_attribute(
                        If False, sorts in ascending order. Defaults to True.
     :return: A new dictionary of movies sorted by the given attribute.
     """
+    if not movie_dict:
+        return print_colored_output("❌ No movies available to sort.", COLOR_ERROR)
+
     attribute_value_key = lambda details: details[1][attribute]
     sorted_movie_dict = dict(
         sorted(movie_dict.items(), key=attribute_value_key, reverse=descending)
@@ -169,6 +192,11 @@ def create_histogram_by_attribute(
     :param movie_dict: Dictionary of movies and their attribute data.
     :param attribute: The attribute to visualize.
     """
+    if not movie_dict:
+        return print_colored_output(
+            "❌ No movies available to create a histogram.", COLOR_ERROR
+        )
+
     file_name = get_colored_input(f"✍️ Please name your histogram for '{attribute}': ")
     if not file_name.endswith(".png"):
         file_name += ".png"
@@ -191,7 +219,7 @@ def create_histogram_by_attribute(
 
     plt.tight_layout()
     plt.savefig(file_name)
-    print_colored_output(
+    return print_colored_output(
         f'✅ Plot saved as "{file_name}" in your project files.',
         COLOR_SUCCESS,
     )
@@ -209,12 +237,12 @@ def get_input_by_type_and_range(
     The input is validated and an error message is shown if the input is invalid
     or out of range.
 
-    :param valid_empty_input:
-    :param datatype:
+    :param valid_empty_input: If True, allows an empty string input and returns None.
+    :param datatype: The datatype to cast for
     :param prompt: The message shown to the user.
     :param start_range: The minimum acceptable value (inclusive).
     :param end_range: The maximum acceptable value (inclusive).
-    :return: The validated floating-point number entered by the user.
+    :return: A validated number of the specified type or None (if empty input is allowed).
     """
     while True:
         user_input = get_colored_input(prompt)
@@ -236,34 +264,52 @@ def get_input_by_type_and_range(
 
 
 def get_current_year() -> int:
+    """
+    Returns the current calendar year as a four-digit integer.
+
+    Uses the system's current date and time to extract the year.
+
+    :return: The current year
+    """
     return datetime.now().year
 
 
-def find_movie(movie_dict: dict[str, dict]) -> str:
+def find_movie(movie_dict: dict[str, dict]) -> str | None:
     """
     Prompts the user to enter a movie name and returns it if it exists in the database.
 
     :param movie_dict: Dictionary of movie titles and their attribute dictionaries.
-    :return: The title of the movie entered by the user, if it exists in the dictionary.
+    :return: The title of the movie entered by the user, or None if the database is empty.
     """
+    if not movie_dict:
+        return print_colored_output(
+            "❌ No movies available to looking for.", COLOR_ERROR
+        )
+
     while True:
         movie_to_update = get_colored_input(
             "Enter the name of the movie you want to update: "
         )
-        if movie_to_update in movie_dict:
+        if movie_to_update not in movie_dict:
+            print_colored_output("❌ Movie not found. Please try again.", COLOR_ERROR)
+        else:
             print_colored_output(f'🔍 "{movie_to_update}" found! ', COLOR_SUCCESS)
             return movie_to_update
-        else:
-            print_colored_output("❌ Movie not found. Please try again.", COLOR_ERROR)
 
 
-def extract_valid_attributes(movie_dict: dict[str, dict[str, float | int]]) -> set[str]:
+def extract_valid_attributes(
+    movie_dict: dict[str, dict[str, float | int]],
+) -> set[str] | None:
     """
     Extracts a set of valid attribute names from the first movie entry in the dictionary.
 
     :param movie_dict: Dictionary of movie titles and their attributes.
     :return: Set of attribute names.
     """
+    if not movie_dict:
+        print_colored_output("❌ No movies available with attributes.", COLOR_ERROR)
+        return set()
+
     for attributes in movie_dict.values():
         if isinstance(attributes, dict):
             return set(attributes.keys())
