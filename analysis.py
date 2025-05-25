@@ -1,18 +1,17 @@
 """
 analysis.py
 
-Provides analysis and evaluation functions for the movie database application.
+Provides statistical and evaluation functions for the movie database application.
 
-This module includes logic for calculating statistical information such as:
-- Average rating
-- Median rating
-- Movies with the best or worst rating
-- Selecting a random movie
+This module includes logic for calculating:
+- Average and median rating
+- Movies with the highest or lowest rating
+- Random movie selection
+- Summing arbitrary numeric attributes
 
-The functions are designed to operate on the movie dictionary and are read-only:
-they do not modify the original data but instead return computed insights.
+All functions are read-only and operate on the movie dictionary without modifying it.
 
-Used primarily by handler functions for displaying meaningful evaluations to the user.
+These are used primarily by handler functions to present insights and statistics to the user.
 """
 
 from random import Random
@@ -27,17 +26,19 @@ def get_calculated_average_rate(movie_dict: dict[str, dict[str, float | int]]) -
     :param movie_dict: Dictionary of movies and ratings.
     :return: Float average rating.
     """
-    return get_movie_rating_sum(movie_dict) / len(movie_dict)
+    return get_sum(movie_dict, "rating") / len(movie_dict)
 
 
-def get_movie_rating_sum(movie_dict: dict[str, dict[str, float | int]]) -> float:
+def get_sum(movie_dict: dict[str, dict[str, float | int]], attribute: str) -> float:
     """
-    Calculates the total sum of all movie ratings in the database.
+    Calculates the total sum of all values for the given attribute across all movies.
 
-    :param movie_dict: Dictionary of movies and their ratings.
-    :return: Float sum of all ratings.
+    :param movie_dict: Dictionary of movies and their attribute dictionaries.
+    :param attribute: The attribute whose values should be summed (e.g., 'rating', 'release').
+    :return: Float sum of all values for the specified attribute.
+    :rtype: float
     """
-    return sum(details["rating"] for details in movie_dict.values())
+    return sum(details[attribute] for details in movie_dict.values())
 
 
 def get_calculated_median_rate(movie_dict: dict[str, dict[str, float | int]]) -> float:

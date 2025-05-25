@@ -27,17 +27,17 @@ from config import (
 )
 
 
-def print_title(title_name: str, star_count: int) -> None:
+def print_title(title_name: str) -> None:
     """
     Prints a formatted title surrounded by a given number of asterisks on each side.
 
     :param title_name: The title text to display.
-    :param star_count: Number of asterisks before and after the title.
     :return: None
     """
-    print_ten_asterix = f"*" * star_count
+    star_count = len(title_name)
+    print_asterix = f"*" * star_count
     print_colored_output(
-        "\n" + print_ten_asterix + f" {title_name} " + print_ten_asterix, COLOR_TITLE
+        "\n" + print_asterix + f" {title_name} " + print_asterix, COLOR_TITLE
     )
 
 
@@ -93,13 +93,12 @@ def print_movies_statistics(
     :param worst_movies: Dictionary of the worst-rated movie(s) and their attributes.
     :return: None
     """
-    title = "Movie Statistics"
-    print_title(title, len(title))
+    print_title("Movie Statistics")
     print_colored_output(f"Average rating: ", COLOR_SUB_TITLE, end="")
-    print_colored_output(f"{average_rate:.2f}", COLOR_VALUES)
+    print_colored_output(f"{average_rate:.1f}", COLOR_VALUES)
 
     print_colored_output(f"Median rating: ", COLOR_SUB_TITLE, end="")
-    print_colored_output(f"{median_rate:.2f}", COLOR_VALUES)
+    print_colored_output(f"{median_rate:.1f}", COLOR_VALUES)
 
     print_colored_output(f"Best movie(s): ", COLOR_SUB_TITLE)
     print_movies(best_movies)
@@ -120,7 +119,7 @@ def print_movie(title: str, movie: dict) -> None:
     rating = movie.get("rating", "unrated")
 
     print_colored_output(f"- {title} ({release}): ", COLOR_TITLE, end="")
-    print_colored_output(f"Rating: {rating}/{RATING_LIMIT}", COLOR_VALUES)
+    print_colored_output(f"{rating}", COLOR_VALUES)
 
 
 def print_movies(movie_dict: dict[str, dict[str, float | int]]) -> None:

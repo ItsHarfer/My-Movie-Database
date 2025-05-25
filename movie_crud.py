@@ -64,7 +64,7 @@ def delete_movie(movie_to_delete: str) -> None:
         )
 
 
-def update_movie(movie_name: str, new_rating: int) -> None:
+def update_movie(movie_name: str, new_rating: float) -> None:
     """
     Updates a specific attribute (e.g. rating, release) of a movie in the database.
 

@@ -33,11 +33,14 @@ from helpers import (
     quit_application,
     get_movies_sorted_by_attribute,
     get_colored_input,
-    get_colored_numeric_input_float,
+    get_input_by_type_and_range,
     find_movie,
     filter_movies_by_search_query,
     create_histogram_by_attribute,
     get_current_year,
+    get_content_validated_input,
+    extract_valid_attributes,
+    filter_movies_by_attributes,
 )
 from movie_crud import (
     add_movie,
@@ -76,8 +79,7 @@ def handle_show_movies(_, __) -> None:
     :return: None. Prints a sorted list of unique ship countries.
     """
     movies = get_movie_list(DATA_FILE)
-    title = "Movie list"
-    print_title(title, len(title))
+    print_title("Movie list")
     print_all_movies(movies)
 
 
@@ -92,14 +94,15 @@ def handle_add_movie(_, __) -> None:
     :return: None
     """
     new_movie_name = get_colored_input("Enter new movie name: ")
-    new_movie_rating = get_colored_numeric_input_float(
-        "Enter new movie rating (0-10): ", 0, 10
+    new_movie_rating = get_input_by_type_and_range(
+        f"Enter new movie rating ({RATING_BASE}-{RATING_LIMIT}): ",
+        float,
+        RATING_BASE,
+        RATING_LIMIT,
     )
     current_year = get_current_year()
-    new_movie_release = int(
-        get_colored_numeric_input_float(
-            "Enter new movie release year: ", FIRST_FILM_RELEASE, current_year
-        )
+    new_movie_release = get_input_by_type_and_range(
+        "Enter new movie release year: ", float, FIRST_FILM_RELEASE, current_year
     )
 
     attributes = {"rating": new_movie_rating, "release": new_movie_release}
@@ -129,8 +132,8 @@ def handle_update_movie(_, movie_dict: dict[str, dict[str, float | int]]) -> Non
     :return: None
     """
     movie_name = find_movie(movie_dict)
-    new_rating = get_colored_numeric_input_float(
-        "Enter the new rating for the movie: ", RATING_BASE, RATING_LIMIT
+    new_rating = get_input_by_type_and_range(
+        "Enter the new rating for the movie: ", float, RATING_BASE, RATING_LIMIT
     )
 
     update_movie(movie_name, new_rating)
@@ -183,20 +186,44 @@ def handle_search_movie(_, movie_dict: dict[str, dict[str, float | int]]) -> Non
     print_search_results(matches)
 
 
-def handle_sorted_movies_by_rating(
+def handle_sorted_movies_by_attribute(
     _, movie_dict: dict[str, dict[str, float | int]]
 ) -> None:
     """
-    Handles the process of retrieving and displaying movies sorted by rating.
+    Handles the process of retrieving and displaying movies sorted by a selected attribute. (BONUS)
 
-    Uses the provided movie dictionary to sort movies by their rating in descending
-    order and prints the sorted list to the console.
+    Prompts the user to choose an attribute (any available in the dataset) and whether
+    they want the results in descending ("first") or ascending ("last") order.
+    Displays the sorted list of movies including their attributes.
 
-    :param _: Unused parameter (commonly required by menu handlers).
-    :param movie_dict: Dictionary of movie titles and their attribute dictionaries (e.g. rating, release).
+    :param _: Unused parameter
+    :param movie_dict: Dictionary of movie titles and their attribute dictionaries.
     :return: None
     """
-    sorted_movies = get_movies_sorted_by_attribute(movie_dict, "rating")
+    if not movie_dict:
+        print_colored_output("❌ No movies available to sort.", COLOR_ERROR)
+        return
+
+    valid_attributes = extract_valid_attributes(movie_dict)
+
+    if not valid_attributes:
+        print_colored_output(
+            "❌ Could not determine available attributes.", COLOR_ERROR
+        )
+        return
+
+    attribute = get_content_validated_input(
+        f"Which attribute do you want to sort by? Available: {', '.join(valid_attributes)}: ",
+        valid_attributes,
+    )
+
+    order = get_content_validated_input(
+        f"Do you want to see the movies with the highest {attribute} first or last? (Enter 'first' or 'last'): ",
+        {"first", "last"},
+    )
+
+    descending = order == "first"
+    sorted_movies = get_movies_sorted_by_attribute(movie_dict, attribute, descending)
     print_movies(sorted_movies)
 
 
@@ -216,8 +243,12 @@ def handle_create_histogram_by_attribute(
     while True:
         attribute = get_colored_input(
             "Enter attribute to visualize (e.g., rating, release): "
-        ).lower()
-        if all(attribute in details for details in movie_dict.values()):
+        )
+        is_available_attribute = all(
+            attribute in details for details in movie_dict.values()
+        )
+
+        if is_available_attribute:
             break
         print_colored_output(
             f"❌ Attribute '{attribute}' not found in all movies. Try again.",
@@ -225,3 +256,51 @@ def handle_create_histogram_by_attribute(
         )
 
     create_histogram_by_attribute(movie_dict, attribute)
+
+
+def handle_filter_movies(_, movie_dict) -> None:
+    """
+    Handles user input to filter movies by rating and release year range.
+
+    Prompts the user for minimum rating, start year, and end year. If no input is provided,
+    default values are used. The filtered movie list is then displayed based on these criteria.
+
+    :param _: Unused parameter (required by handler interface).
+    :param movie_dict: Dictionary of movie titles and their attribute dictionaries.
+    :return: None
+    """
+    min_rating = (
+        get_input_by_type_and_range(
+            "Enter min rating (leave blank for no min rating): ",
+            float,
+            RATING_BASE,
+            RATING_LIMIT,
+            valid_empty_input=True,
+        )
+        or RATING_BASE
+    )
+
+    current_year = get_current_year()
+    start_year = (
+        get_input_by_type_and_range(
+            "Enter start year (leave blank for no start year): ",
+            int,
+            FIRST_FILM_RELEASE,
+            current_year,
+            valid_empty_input=True,
+        )
+        or FIRST_FILM_RELEASE
+    )
+
+    end_year = (
+        get_input_by_type_and_range(
+            "Enter end year (leave blank for no end year): ",
+            int,
+            FIRST_FILM_RELEASE,
+            current_year,
+            valid_empty_input=True,
+        )
+        or current_year
+    )
+
+    filter_movies_by_attributes(movie_dict, min_rating, start_year, end_year)

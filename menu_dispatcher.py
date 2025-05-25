@@ -7,8 +7,9 @@ from handlers import (
     handle_show_movie_statistics,
     handle_random_movie,
     handle_search_movie,
-    handle_sorted_movies_by_rating,
+    handle_sorted_movies_by_attribute,
     handle_create_histogram_by_attribute,
+    handle_filter_movies,
 )
 
 # Dispatcher mapping for movie operations
@@ -46,11 +47,15 @@ MOVIE_COMMAND_DISPATCHER = {
         "label": "Search movie",
     },
     8: {
-        "handler": handle_sorted_movies_by_rating,
-        "label": "Movies sorted by rating",
+        "handler": handle_sorted_movies_by_attribute,
+        "label": "Movies sorted by an attribute you choose",
     },
     9: {
         "handler": handle_create_histogram_by_attribute,
         "label": "Create Rating Histogram",
+    },
+    10: {
+        "handler": handle_filter_movies,
+        "label": "Show only movies matching your rating and year criteria",
     },
 }

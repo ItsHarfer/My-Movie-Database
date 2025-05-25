@@ -4,7 +4,7 @@
         "release": 1994
     },
     "The Room": {
-        "rating": 2.0,
+        "rating": 9.0,
         "release": 1972
     },
     "The Godfather": {
@@ -35,8 +35,44 @@
         "rating": 8.7,
         "release": 1980
     },
-    "Interstellar": {
-        "rating": 10.0,
+    "Inception": {
+        "rating": 8.8,
+        "release": 2010
+    },
+    "The Matrix": {
+        "rating": 8.7,
+        "release": 1999
+    },
+    "Fight Club": {
+        "rating": 8.8,
+        "release": 1999
+    },
+    "The Shawshank Redemption": {
+        "rating": 9.3,
+        "release": 1994
+    },
+    "The Silence of the Lambs": {
+        "rating": 8.6,
+        "release": 1991
+    },
+    "Whiplash": {
+        "rating": 8.5,
+        "release": 2014
+    },
+    "Parasite": {
+        "rating": 8.6,
+        "release": 2019
+    },
+    "Gladiator": {
+        "rating": 8.5,
+        "release": 2000
+    },
+    "Her": {
+        "rating": 8.0,
+        "release": 2013
+    },
+    "The Grand Budapest Hotel": {
+        "rating": 8.1,
         "release": 2014
     }
 }

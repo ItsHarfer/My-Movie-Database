@@ -19,7 +19,7 @@ def get_movie_list(filename: str) -> dict[str, dict[str, float | int]]:
             all_data = json.load(file)
         return dict(all_data)
     except IOError as error:
-        print(f"❌ Error loading movies from file: {error}")
+        print_colored_output(f"❌ Error loading movies from file: {error}", COLOR_ERROR)
         return {}
 
 
@@ -38,7 +38,7 @@ def save_movies(movie_dict: dict[str, dict[str, float | int]], filename: str) ->
         with open(filename, "w") as file:
             json.dump(movie_dict, file, indent=4)
     except IOError as error:
-        print(f"❌ Error saving movies to file: {error}")
+        print_colored_output(f"❌ Error saving movies to file: {error}", COLOR_ERROR)
 
 
 def add_movie(title: str, attributes: dict[str, float | int]) -> None:

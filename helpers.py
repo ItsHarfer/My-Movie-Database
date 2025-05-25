@@ -20,8 +20,15 @@ import sys
 from colorama import Style
 from matplotlib import pyplot as plt
 
-from config import COLOR_MAP, COLOR_INPUT, COLOR_SUCCESS
-from printers import print_colored_output
+from config import (
+    COLOR_MAP,
+    COLOR_INPUT,
+    COLOR_SUCCESS,
+    COLOR_ERROR,
+    HISTOGRAM_WIDTH,
+    HISTOGRAM_HEIGHT,
+)
+from printers import print_colored_output, print_movies, print_title
 
 
 def quit_application() -> None:
@@ -48,8 +55,40 @@ def get_colored_input(prompt: str, color: str = COLOR_INPUT) -> str:
     return input(color_prefix + prompt + Style.RESET_ALL).strip()
 
 
+def get_type_validated_input(prompt: str, expected_type: type):
+    while True:
+        user_input = get_colored_input(prompt)
+        try:
+            return expected_type(user_input)
+        except ValueError:
+            print_colored_output(
+                f"❌ Invalid input. Please enter a valid {expected_type.__name__}.",
+                COLOR_ERROR,
+            )
+
+
+def get_content_validated_input(prompt: str, valid_options: set[str]) -> str:
+    """
+    Prompts the user for input and validates it against a set of allowed options.
+
+    The input is displayed in color and repeated until a valid value is entered.
+
+    :param prompt: The text to display to the user.
+    :param valid_options: A set of accepted string values.
+    :return: A validated and normalized user input string.
+    """
+    while True:
+        user_input = get_colored_input(prompt)
+        if user_input in valid_options:
+            return user_input
+        print_colored_output(
+            f"❌ Invalid input '{user_input}'. Please enter one of: {', '.join(valid_options)}.",
+            COLOR_ERROR,
+        )
+
+
 def filter_movies_by_search_query(
-    movie_dict: dict[str, dict], search_query: str
+    movie_dict: dict[str, dict[str, float | int]], search_query: str
 ) -> dict:
     """
     Filters the movie dictionary for titles that contain the search query.
@@ -66,6 +105,36 @@ def filter_movies_by_search_query(
         for title, details in movie_dict.items()
         if search_query in title.lower()
     }
+
+
+def filter_movies_by_attributes(
+    movie_dict: dict[str, dict[str, float | int]],
+    min_rating: float,
+    start_year: int,
+    end_year: int,
+) -> None:
+    """
+    Filters and displays movies that match the specified rating and release year criteria.
+
+    :param movie_dict: Dictionary of movie titles and their attribute dictionaries
+    :param min_rating: Minimum rating a movie must have to be included.
+    :param start_year: Earliest release year to include.
+    :param end_year: Latest release year to include.
+    :return: None
+    """
+    filtered_movies = {
+        title: details
+        for title, details in movie_dict.items()
+        if details["rating"] >= min_rating
+        and start_year <= details["release"] <= end_year
+    }
+    if not filtered_movies:
+        print_colored_output(
+            "🔍 No matching movies found. Try adjusting your filter.", COLOR_ERROR
+        )
+    else:
+        print_title("Filtered movies")
+        print_movies(filtered_movies)
 
 
 def get_movies_sorted_by_attribute(
@@ -94,11 +163,11 @@ def create_histogram_by_attribute(
     movie_dict: dict[str, dict[str, float | int]], attribute: str
 ) -> None:
     """
-    Creates and saves a horizontal bar chart for a given numeric attribute.
+    Creates and saves a scatter plot for the 'release' attribute.
+    For all other attributes, creates and saves a horizontal bar chart.
 
-    :param movie_dict: Dictionary of movies and their attribute dictionaries.
-    :param attribute: The key of the attribute to visualize (e.g., "rating", "release").
-    :return: None (but a .png file is saved).
+    :param movie_dict: Dictionary of movies and their attribute data.
+    :param attribute: The attribute to visualize.
     """
     file_name = get_colored_input(f"✍️ Please name your histogram for '{attribute}': ")
     if not file_name.endswith(".png"):
@@ -107,28 +176,41 @@ def create_histogram_by_attribute(
     movie_names_list = list(movie_dict.keys())
     movie_attribute_list = [details[attribute] for details in movie_dict.values()]
 
-    plt.barh(movie_names_list, movie_attribute_list)
+    plt.figure(figsize=(HISTOGRAM_WIDTH, HISTOGRAM_HEIGHT))
 
-    plt.xlabel(attribute.capitalize())
-    plt.ylabel("Movie")
-    plt.title(f"Movie {attribute.capitalize()}s")
+    if attribute == "release":
+        plt.scatter(movie_attribute_list, movie_names_list)
+        plt.xlabel(attribute.capitalize())
+        plt.ylabel("Movie")
+        plt.title("Movie Release Years")
+    else:
+        plt.barh(movie_names_list, movie_attribute_list)
+        plt.xlabel(attribute.capitalize())
+        plt.ylabel("Movie")
+        plt.title(f"Movie {attribute.capitalize()}s")
 
     plt.tight_layout()
     plt.savefig(file_name)
     print_colored_output(
-        f'✅ Horizontal bar histogram saved in "{file_name}" in your project files.',
-        "green",
+        f'✅ Plot saved as "{file_name}" in your project files.',
+        COLOR_SUCCESS,
     )
 
 
-def get_colored_numeric_input_float(
-    prompt: str, start_range: float, end_range: float
-) -> float:
+def get_input_by_type_and_range(
+    prompt: str,
+    datatype: type,
+    start_range: float,
+    end_range: float,
+    valid_empty_input=False,
+) -> float | None:
     """
     Prompts the user to enter a floating-point number within a specified range.
     The input is validated and an error message is shown if the input is invalid
     or out of range.
 
+    :param valid_empty_input:
+    :param datatype:
     :param prompt: The message shown to the user.
     :param start_range: The minimum acceptable value (inclusive).
     :param end_range: The maximum acceptable value (inclusive).
@@ -136,18 +218,20 @@ def get_colored_numeric_input_float(
     """
     while True:
         user_input = get_colored_input(prompt)
+        if valid_empty_input and user_input == "":
+            return None
         try:
-            number = float(user_input)
-            if start_range <= number <= end_range:
-                return number
+            user_input_with_type = datatype(user_input)
+            if start_range <= user_input_with_type <= end_range:
+                return user_input_with_type
             else:
                 print_colored_output(
-                    f"❌ Please enter a number between {start_range} and {end_range}.",
-                    "red",
+                    f"❌ Please enter a value between {start_range} and {end_range}.",
+                    COLOR_ERROR,
                 )
         except ValueError:
             print_colored_output(
-                "❌ Invalid input. Please enter a valid number.", "red"
+                "❌ Invalid input. Please enter a valid number.", COLOR_ERROR
             )
 
 
@@ -167,7 +251,20 @@ def find_movie(movie_dict: dict[str, dict]) -> str:
             "Enter the name of the movie you want to update: "
         )
         if movie_to_update in movie_dict:
-            print_colored_output(f'🔍 "{movie_to_update}" found! ', "green")
+            print_colored_output(f'🔍 "{movie_to_update}" found! ', COLOR_SUCCESS)
             return movie_to_update
         else:
-            print_colored_output("❌ Movie not found. Please try again.", "red")
+            print_colored_output("❌ Movie not found. Please try again.", COLOR_ERROR)
+
+
+def extract_valid_attributes(movie_dict: dict[str, dict[str, float | int]]) -> set[str]:
+    """
+    Extracts a set of valid attribute names from the first movie entry in the dictionary.
+
+    :param movie_dict: Dictionary of movie titles and their attributes.
+    :return: Set of attribute names.
+    """
+    for attributes in movie_dict.values():
+        if isinstance(attributes, dict):
+            return set(attributes.keys())
+    return set()

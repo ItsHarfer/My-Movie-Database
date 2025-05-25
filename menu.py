@@ -14,7 +14,7 @@ allowing interaction with the movie dataset via the command-line interface.
 
 from config import MENU_MIN_INDEX, MENU_MAX_INDEX, ASTERISK_COUNT, COLOR_MENU_OPTIONS
 from menu_dispatcher import MOVIE_COMMAND_DISPATCHER
-from helpers import get_colored_numeric_input_float, get_colored_input
+from helpers import get_input_by_type_and_range, get_colored_input
 from printers import print_title, print_colored_output
 
 
@@ -44,7 +44,7 @@ def print_menu_options() -> None:
 
     :return: None
     """
-    print_title("Menu", ASTERISK_COUNT)
+    print_title("Menu")
     for index in sorted(MOVIE_COMMAND_DISPATCHER):
         label = MOVIE_COMMAND_DISPATCHER[index]["label"]
         print(f"{index} - ", end="")
@@ -68,8 +68,9 @@ def run_menu_loop(movies_dict: dict[str, dict[str, float | int]]) -> None:
     while True:
         print_menu_options()
         user_choice = int(
-            get_colored_numeric_input_float(
+            get_input_by_type_and_range(
                 f"Enter command number ({MENU_MIN_INDEX}-{MENU_MAX_INDEX}): ",
+                int,
                 MENU_MIN_INDEX,
                 MENU_MAX_INDEX,
             )
