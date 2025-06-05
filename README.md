@@ -54,7 +54,7 @@ All data is persisted using SQLite.
 ### 1. Clone the Repository
 
 ```bash
-git clone [https://github.com/ItsHarfer/The-Movie-Project-Part-2.git](https://github.com/ItsHarfer/My-Movie-Database.git)
+git clone https://github.com/ItsHarfer/My-Movie-Database.git
 cd The-Movie-Project-Part-2
 ```
 
