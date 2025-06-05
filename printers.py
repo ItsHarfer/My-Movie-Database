@@ -112,11 +112,13 @@ def print_movie(title: str, movie: dict) -> None:
     :param movie: Dictionary containing movie attributes like 'release', 'rating', and optional others.
     :return: None
     """
-    release = movie.get("release", "unknown")
+    year = movie.get("year", "unknown")
     rating = movie.get("rating", "unrated")
+    poster_url = movie.get("poster_url", "unknown")
 
-    print_colored_output(f"- {title} ({release}): ", COLOR_TITLE, end="")
-    print_colored_output(f"{rating}", COLOR_VALUES)
+    print_colored_output(f"- {title} ({year}): ", COLOR_TITLE, end="")
+    print_colored_output(f"{rating} ", COLOR_VALUES, end="")
+    print_colored_output(f"Poster: {poster_url}", COLOR_SUCCESS)
 
 
 def print_movies(movie_dict: dict[str, dict[str, float | int]]) -> None:

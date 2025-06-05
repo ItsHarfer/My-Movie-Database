@@ -143,8 +143,7 @@ def filter_movies_by_attributes(
     filtered_movies = {
         title: details
         for title, details in movie_dict.items()
-        if details["rating"] >= min_rating
-        and start_year <= details["release"] <= end_year
+        if details["rating"] >= min_rating and start_year <= details["year"] <= end_year
     }
     if not filtered_movies:
         print_colored_output(
@@ -206,11 +205,14 @@ def create_histogram_by_attribute(
 
     plt.figure(figsize=(HISTOGRAM_WIDTH, HISTOGRAM_HEIGHT))
 
-    if attribute == "release":
+    if attribute == "year":
         plt.scatter(movie_attribute_list, movie_names_list)
         plt.xlabel(attribute.capitalize())
         plt.ylabel("Movie")
         plt.title("Movie Release Years")
+
+        # Show the years just in full years
+        plt.gca().xaxis.set_major_locator(plt.MaxNLocator(integer=True))
     else:
         plt.barh(movie_names_list, movie_attribute_list)
         plt.xlabel(attribute.capitalize())

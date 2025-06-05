@@ -16,6 +16,7 @@ Used primarily by menu handler functions in the application.
 """
 
 import movie_storage
+import movie_storage_sql
 from config import COLOR_ERROR, COLOR_SUCCESS
 from printers import print_colored_output
 
@@ -63,7 +64,8 @@ def delete_movie(
     else:
         try:
             del movie_dict[movie_to_delete]
-            movie_storage.delete_movie(movie_to_delete)
+            # movie_storage.delete_movie(movie_to_delete)
+            movie_storage_sql.delete_movie(movie_to_delete)
             return print_colored_output(
                 f'🗑️ "{movie_to_delete}" successfully deleted from the database.',
                 COLOR_SUCCESS,
