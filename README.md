@@ -1,4 +1,4 @@
-# My Movie Database Part 2
+# My Movie Database  
 
 A Python-based Command Line Interface (CLI) application for managing a local movie database. Users can add, view, edit, delete, and analyze movie entries. All data is persisted in a local JSON file.
 

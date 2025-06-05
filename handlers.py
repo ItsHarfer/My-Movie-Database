@@ -15,13 +15,22 @@ Main functionalities covered:
 - Gracefully exiting the application
 """
 
+import requests
+
+import movie_storage_sql
 from analysis import (
     get_calculated_average_rate,
     get_calculated_median_rate,
     get_all_movies_extremes_by_mode,
     get_random_movie,
 )
-from config import FIRST_MOVIE_RELEASE, RATING_BASE, RATING_LIMIT, COLOR_ERROR
+from config import (
+    FIRST_MOVIE_RELEASE,
+    RATING_BASE,
+    RATING_LIMIT,
+    COLOR_ERROR,
+    COLOR_SUCCESS,
+)
 from helpers import (
     quit_application,
     get_movies_sorted_by_attribute,
@@ -35,11 +44,6 @@ from helpers import (
     extract_valid_attributes,
     filter_movies_by_attributes,
 )
-from movie_crud import (
-    add_movie,
-    delete_movie,
-    update_movie,
-)
 
 from printers import (
     print_all_movies,
@@ -50,6 +54,14 @@ from printers import (
     print_title,
     print_colored_output,
 )
+
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+OMDB_API_KEY = os.getenv("OMDB_API_KEY")
+OMDB_API_URL = os.getenv("OMDB_API_URL")
 
 
 def handle_quit_application(_, __):
@@ -82,35 +94,45 @@ def handle_add_movie(_, movie_dict: dict[str, dict[str, float | int]]) -> None:
     """
     Handles user input to add a new movie to the database,
     including its name, rating, and release year.
-
-    :param _: Unused parameter
-    :param movie_dict: Dictionary of movie titles and their attribute dictionaries.
-    :return: None
     """
     new_movie_name = get_colored_input("Enter new movie name: ")
-    new_movie_rating = get_input_by_type_and_range(
-        f"Enter new movie rating ({RATING_BASE}-{RATING_LIMIT}): ",
-        float,
-        RATING_BASE,
-        RATING_LIMIT,
-    )
-    current_year = get_current_year()
-    new_movie_release = get_input_by_type_and_range(
-        "Enter new movie release year: ", int, FIRST_MOVIE_RELEASE, current_year
-    )
 
-    attributes = {"rating": new_movie_rating, "release": new_movie_release}
+    if new_movie_name in movie_dict:
+        return print_colored_output(
+            "❌ Movie is already in the database. Try again.", COLOR_ERROR
+        )
 
-    add_movie(new_movie_name, attributes, movie_dict)
+    try:
+        # Fetch movie data from OMDb API by title
+        req = requests.get(f"{OMDB_API_URL}&apikey={OMDB_API_KEY}&t={new_movie_name}")
+        data = req.json()
+
+        # Build the attribute dictionary using relevant data from API
+        attributes = {
+            "rating": float(data["imdbRating"]),
+            "year": int(data["Year"]),
+            "poster_url": data["Poster"],
+        }
+
+        # Update the local dictionary
+        movie_dict[new_movie_name] = attributes
+
+        # Save the new movie and its attributes to the database
+        return movie_storage_sql.add_movie(new_movie_name, attributes)
+
+    except (KeyError, ValueError, TypeError) as e:
+        return print_colored_output(
+            f"❌ Failed to process movie data. Error: {e}", COLOR_ERROR
+        )
+    except requests.RequestException as e:
+        return print_colored_output(
+            f"❌ Failed to reach OMDb API. Network error: {e}", COLOR_ERROR
+        )
 
 
 def handle_delete_movie(_, movie_dict: dict[str, dict[str, float | int]]) -> None:
     """
     Handles user input to delete a movie from the database.
-
-    :param movie_dict:
-    :param _: Unused parameter (commonly required by menu handlers).
-    :return: None
     """
     if not movie_dict:
         return print_colored_output("❌ No movies to delete.", COLOR_ERROR)
@@ -118,7 +140,28 @@ def handle_delete_movie(_, movie_dict: dict[str, dict[str, float | int]]) -> Non
     movie_to_delete = get_colored_input(
         "Enter the name of the movie you want to delete: "
     )
-    return delete_movie(movie_to_delete, movie_dict)
+
+    # Check if the movie exists in the dictionary
+    if movie_to_delete not in movie_dict:
+        return print_colored_output(
+            f"❌ Movie '{movie_to_delete}' not found in the database.", COLOR_ERROR
+        )
+
+    try:
+        # Remove the movie from the in-memory dictionary
+        del movie_dict[movie_to_delete]
+
+        # Remove the movie from persistent storage
+        movie_storage_sql.delete_movie(movie_to_delete)
+
+        return print_colored_output(
+            f"✅ Movie '{movie_to_delete}' successfully deleted.", COLOR_SUCCESS
+        )
+
+    except Exception as e:
+        return print_colored_output(
+            f"❌ Error deleting movie '{movie_to_delete}': {e}", COLOR_ERROR
+        )
 
 
 def handle_update_movie(_, movie_dict: dict[str, dict[str, float | int]]) -> None:
@@ -132,12 +175,31 @@ def handle_update_movie(_, movie_dict: dict[str, dict[str, float | int]]) -> Non
     if not movie_dict:
         return print_colored_output("❌ No movies available to update.", COLOR_ERROR)
 
-    movie_name = find_movie(movie_dict)
-    new_rating = get_input_by_type_and_range(
-        "Enter the new rating for the movie: ", float, RATING_BASE, RATING_LIMIT
-    )
+    try:
+        movie_name = find_movie(movie_dict)
 
-    return update_movie(movie_name, new_rating, movie_dict)
+        if movie_name not in movie_dict:
+            return print_colored_output(
+                f"❌ Movie '{movie_name}' not found in the database.", COLOR_ERROR
+            )
+
+        new_rating = get_input_by_type_and_range(
+            "Enter the new rating for the movie: ", float, RATING_BASE, RATING_LIMIT
+        )
+
+        # Update rating in memory
+        movie_dict[movie_name]["rating"] = new_rating
+
+        # Update rating in persistent storage
+        movie_storage_sql.update_movie(movie_name, new_rating)
+
+        return print_colored_output(
+            f"✅ Movie '{movie_name}' rating updated to {new_rating}.",
+            COLOR_SUCCESS,
+        )
+
+    except Exception as e:
+        return print_colored_output(f"❌ Error updating movie rating: {e}", COLOR_ERROR)
 
 
 def handle_show_movie_statistics(
@@ -264,7 +326,7 @@ def handle_create_histogram_by_attribute(
 
     while True:
         attribute = get_colored_input(
-            "Enter attribute to visualize (e.g., rating, release): "
+            "Enter attribute to visualize (e.g., rating, year): "
         )
         is_available_attribute = all(
             attribute in details for details in movie_dict.values()
