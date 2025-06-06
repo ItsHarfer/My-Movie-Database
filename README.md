@@ -1,22 +1,22 @@
 # My Movie Database – SQL Edition 🎬
 
-A Python-based Command Line Interface (CLI) application for managing a movie database.  
-Users can add, view, update, delete, and analyze movies with automatic data fetching via the OMDb API.  
-All data is persisted using SQLite.
+A Python-based application for managing a movie database, accessible via both Command Line Interface (CLI) and a static web interface. Users can add, view, update, delete, and analyze movies with automatic data fetching via the OMDb API. All data is persisted using SQLite.
 
 ---
 
 ## Features
 
+- **Dual Interface:** Command Line Interface (CLI) and Static Web Interface
 - Add movies by title with automatic data enrichment from the OMDb API
 - Create, Read, Update, Delete (CRUD) movie entries
 - Persistent storage via SQLite database
 - Calculate average and median ratings
 - Identify top-rated and lowest-rated movies
-- Generate histograms (with fixed year display) by rating or year
+- Generate histograms by rating or year
 - Poster URLs stored and shown alongside movie entries
 - Menu-based CLI navigation
 - Environment variables for secure API config (`.env`)
+- Generate static web pages displaying current movie library
 
 ---
 
@@ -26,6 +26,7 @@ All data is persisted using SQLite.
 - SQLite for persistent structured data storage
 - OMDb API integration (via HTTP requests)
 - Modular Python architecture
+- HTML/CSS for static web frontend
 
 ---
 
@@ -36,7 +37,7 @@ All data is persisted using SQLite.
 ├── analysis.py           # Rating calculations and statistics
 ├── config.py             # Configuration values and constants
 ├── .env                  # API key and external URLs (excluded from version control)
-├── handlers.py           # User interaction logic (e.g. add/delete/update)
+├── handlers.py           # User interaction logic (e.g., add/delete/update/web generation)
 ├── helpers.py            # Input validation, filtering, visualizations
 ├── main.py               # CLI entry point
 ├── menu.py               # Menu structure
@@ -55,11 +56,13 @@ All data is persisted using SQLite.
 
 ```bash
 git clone https://github.com/ItsHarfer/My-Movie-Database.git
-cd The-Movie-Project-Part-2
+cd My-Movie-Database
 ```
 
 ### 2. Configure Environment
 
+> Before we can move on, get your personal API key from OMDB: https://www.omdbapi.com/ and activate it in your registration email.
+ 
 Create a `.env` file in the root directory and add your OMDb API key:
 
 ```
@@ -82,52 +85,30 @@ pip install -r requirements.txt
 
 ### 4. Run the Application
 
+CLI:
 ```bash
 python main.py
 ```
+
+Generate Web Interface:
+- Select the "Generate Static Website" option within the CLI.
+- Open the generated HTML file in your browser.
 
 ---
 
 ## Example Operations
 
-Here are some things you can do with the application:
-
-- **Add a Movie**
-  - Example: `Titanic`
-  - Automatically fetches rating, release year, and poster from the OMDb API.
-  - No need to manually enter data.
-
-- **Delete a Movie**
-  - Remove any movie by entering its exact title.
-  - Confirmation is shown after deletion.
-
-- **Update a Movie Rating**
-  - Modify the rating of an existing movie by name.
-  - Input is validated between 1.0 and 10.0.
-
-- **View All Movies**
-  - Displays a formatted list of all movies with their rating, year, and poster URL.
-
-- **Search for a Movie**
-  - Enter part of a movie title (e.g. `ring`) to see all matches (e.g. `The Lord of the Rings`).
-
-- **Show Movie Statistics**
-  - View average and median rating.
-  - See top-rated and worst-rated movies from the collection.
-
-- **Random Movie**
-  - Picks and displays one random movie from your database for inspiration.
-
-- **Sort Movies by Attribute**
-  - Choose an attribute (e.g. `rating` or `year`) and sort ascending or descending.
-
-- **Create a Histogram**
-  - Create and save a visualization for rating or release year as `.png`.
-  - Year axis uses whole numbers (bugfix included).
-
-- **Filter Movies by Rating and Year**
-  - Input a minimum rating and a release year range (e.g. 7.0 from 2000 to 2022).
-  - Displays only matching movies.
+- **Add a Movie:** Automatically fetch rating, release year, and poster from OMDb API.
+- **Delete a Movie:** Remove movies by entering their exact titles.
+- **Update a Movie Rating:** Modify existing ratings with validation (1.0–10.0).
+- **View All Movies:** Display all movies with their details.
+- **Search Movies:** Find movies by partial title match.
+- **Movie Statistics:** View average, median, top-rated, and lowest-rated movies.
+- **Random Movie:** Display a randomly selected movie from your database.
+- **Sort Movies:** Organize movies by rating or release year.
+- **Create a Histogram:** Visualize ratings or release years as `.png` images.
+- **Filter Movies:** Filter movies by rating and release year ranges.
+- **Static Web Interface:** Generate a visually appealing web page to overview your movie collection.
 
 ---
 
@@ -141,8 +122,6 @@ Email: `martin.haferanke@gmail.com`
 
 ## License
 
-This project is licensed under the MIT License (Educational Use).
+Licensed under the MIT License (Educational Use).
 
----
-
-Built for learning, exploring Python, SQL, and API-powered CLI applications.
+Built for learning, exploring Python, SQL, API-powered CLI applications, and static web interfaces.
