@@ -1,18 +1,21 @@
 """
 helpers.py
 
-Provides utility functions for the movie database application.
+Provides utility functions for input handling, data filtering, visualization,
+and HTML rendering in the movie database application.
 
 This module includes reusable helper functions for:
-- handling colored user input and output,
-- searching and sorting movie data,
-- creating visualizations (e.g. rating histograms),
-- quitting the application gracefully,
-- validating numeric input,
-- and finding specific movies in the dataset.
+- Colored user input and output
+- Type and content validation of user input
+- Searching, filtering, and sorting movie dictionaries
+- Generating statistics and rating histograms
+- Rendering and saving HTML files with movie data
+- Exiting the application gracefully
 
-It acts as a support layer for the main application logic and improves code reuse,
-readability, and maintainability.
+It supports clean modularization of utility logic and enhances maintainability and code reuse.
+
+Author: Martin Haferanke
+Date: 06.06.2025
 """
 
 from datetime import datetime
@@ -123,7 +126,7 @@ def filter_movies_by_search_query(
 
 
 def filter_movies_by_attributes(
-    movie_dict: dict[str, dict[str, float | int]],
+    movie_dict: dict[str, dict],
     min_rating: float,
     start_year: int,
     end_year: int,
@@ -157,8 +160,8 @@ def filter_movies_by_attributes(
 
 
 def get_movies_sorted_by_attribute(
-    movie_dict: dict[str, dict[str, float | int]], attribute: str, descending=True
-) -> dict[str, dict[str, float | int]] | None:
+    movie_dict: dict[str, dict], attribute: str, descending=True
+) -> dict[str, dict] | None:
     """
     Sorts the movies by a given numeric attribute.
 
@@ -181,9 +184,7 @@ def get_movies_sorted_by_attribute(
     return sorted_movie_dict
 
 
-def create_histogram_by_attribute(
-    movie_dict: dict[str, dict[str, float | int]], attribute: str
-) -> None:
+def create_histogram_by_attribute(movie_dict: dict[str, dict], attribute: str) -> None:
     """
     Creates and saves a scatter plot for the 'release' attribute.
     For all other attributes, creates and saves a horizontal bar chart.
@@ -300,7 +301,7 @@ def find_movie(movie_dict: dict[str, dict]) -> str | None:
 
 
 def extract_valid_attributes(
-    movie_dict: dict[str, dict[str, float | int]],
+    movie_dict: dict[str, dict],
 ) -> set[str] | None:
     """
     Extracts a set of valid attribute names from the first movie entry in the dictionary.
@@ -316,3 +317,89 @@ def extract_valid_attributes(
         if isinstance(attributes, dict):
             return set(attributes.keys())
     return set()
+
+
+def replace_placeholder_with_html_content(
+    html: str, placeholder: str, output: str
+) -> str:
+    """
+    Replaces a placeholder string in the given HTML content with the specified output.
+
+    This is typically used to inject dynamic content (e.g. movie title, movie grid)
+    into a predefined HTML template.
+
+    :param html: The original HTML string containing the placeholder.
+    :param placeholder: The placeholder string to be replaced (e.g. {{__PLACEHOLDER_TITLE__}}).
+    :param output: The string to replace the placeholder with.
+    :return: HTML string with the placeholder replaced by the output.
+    """
+
+    if placeholder not in html:
+        print_colored_output(
+            f"❌ Error: Placeholder '{placeholder}' not found in HTML template.",
+            COLOR_ERROR,
+        )
+        return html
+    return html.replace(placeholder, output)
+
+
+def generate_movie_html_content(movie_data: dict[str, dict]) -> str:
+    """
+    Generates HTML markup for a list of movies based on the given movie data.
+
+    Iterates through each movie entry and serializes it into an HTML list item
+    using the `serialize_movie` function, wrapping all items in an ordered list container.
+
+    :param movie_data: Dictionary of movie titles and their corresponding attribute dictionaries.
+    :return: HTML string containing the formatted movie cards.
+    """
+    output = ""
+    output += '<ol class="movie-grid">'
+    for title, details in movie_data.items():
+        movie_dict = details.copy()
+        movie_dict["title"] = title
+        output += serialize_movie(movie_dict)
+    output += "</ol>"
+    return output
+
+
+def serialize_movie(movie_obj: dict) -> str:
+    """
+    Serializes a movie dictionary into an HTML card string.
+
+    Extracts the movie's title, year, rating, and poster URL and passes them to
+    the `generate_movie_card` function to produce the final HTML markup.
+
+    :param movie_obj: Dictionary containing the movie's attributes, including title, year, rating, and poster URL.
+    :return: A string of HTML representing the serialized movie card.
+    """
+    title = movie_obj.get("title", "")
+    year = movie_obj.get("year", "Unknown")
+    rating = movie_obj.get("rating", "Unknown")
+    poster_url = movie_obj.get("poster_url", "Unknown")
+    return generate_movie_card(title, year, rating, poster_url)
+
+
+def generate_movie_card(title, year, rating, poster_url) -> str:
+    """
+    Generates an HTML list item representing a movie card.
+
+    This function formats the provided movie information (title, year, rating, and poster URL)
+    into a styled HTML snippet suitable for inclusion in a movie grid on a webpage.
+
+    :param title: The title of the movie.
+    :param year: The release year of the movie.
+    :param rating: The IMDb rating of the movie.
+    :param poster_url: URL of the movie poster image.
+    :return: A string of HTML representing the movie card.
+    """
+    output = ""
+    output += f"<li>\n"
+    output += f'  <div class="movie">\n'
+    output += f'    <img class="movie-poster" src="{poster_url}\n">'
+    output += f'    <div class="movie-title">{title}</div>\n'
+    output += f'    <div class="movie-year">{year}</div>\n'
+    output += f'    <div class="movie-year">{rating}/10</div>\n'
+    output += f"  </div>\n"
+    output += f"</li>\n"
+    return output

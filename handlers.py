@@ -1,22 +1,28 @@
 """
 handlers.py
 
-Defines all handler functions for user interaction in the movie database application.
+This module defines handler functions for user interactions in the movie database application.
 
-This module is intended to be used in conjunction with a command dispatcher
-(MOVIE_COMMAND_DISPATCHER), which maps menu commands to the appropriate handlers.
+It is used in conjunction with the MOVIE_COMMAND_DISPATCHER, which maps user-selected
+menu options to the corresponding handler logic.
 
-Main functionalities covered:
-- Adding, deleting, and updating movies
-- Listing, searching, and sorting movie entries
-- Displaying statistics and generating visualizations (e.g. rating histogram)
-- Selecting and showing a random movie
-- Filtering movies by rating and release year
-- Gracefully exiting the application
+Main features include:
+- Adding, deleting, and updating movie records
+- Listing all movies and showing individual or random entries
+- Searching and sorting movie data by user-selected attributes
+- Calculating and displaying statistics like average and median ratings
+- Generating visualizations such as rating histograms
+- Filtering movies based on rating and year range
+- Generating a website with movie data
+- Gracefully exiting the program
+
+Author: Martin Haferanke
+Date: 06.06.2025
 """
 
 import requests
 
+import data_io
 import movie_storage_sql
 from analysis import (
     get_calculated_average_rate,
@@ -30,6 +36,10 @@ from config import (
     RATING_LIMIT,
     COLOR_ERROR,
     COLOR_SUCCESS,
+    HTML_TEMPLATE_FILE,
+    PLACEHOLDER_TITLE,
+    PLACEHOLDER_MOVIE_GRID,
+    HTML_OUTPUT_FILE,
 )
 from helpers import (
     quit_application,
@@ -43,6 +53,8 @@ from helpers import (
     get_content_validated_input,
     extract_valid_attributes,
     filter_movies_by_attributes,
+    replace_placeholder_with_html_content,
+    generate_movie_html_content,
 )
 
 from printers import (
@@ -58,6 +70,7 @@ from printers import (
 from dotenv import load_dotenv
 import os
 
+# Initialize .env to get API Key and API_URL for secure access
 load_dotenv()
 
 OMDB_API_KEY = os.getenv("OMDB_API_KEY")
@@ -75,7 +88,7 @@ def handle_quit_application(_, __):
     quit_application()
 
 
-def handle_show_movies(_, movie_dict: dict[str, dict[str, float | int]]) -> None:
+def handle_show_movies(_, movie_dict: dict[str, dict]) -> None:
     """
     Display a list of all unique countries represented by ships in the dataset.
 
@@ -90,10 +103,16 @@ def handle_show_movies(_, movie_dict: dict[str, dict[str, float | int]]) -> None
     return print_all_movies(movie_dict)
 
 
-def handle_add_movie(_, movie_dict: dict[str, dict[str, float | int]]) -> None:
+def handle_add_movie(_, movie_dict: dict[str, dict]) -> None:
     """
-    Handles user input to add a new movie to the database,
-    including its name, rating, and release year.
+    Handles user input to add a new movie to the database, including its name, rating, and release year.
+
+    Prompts the user to enter a movie title, retrieves data from the OMDb API,
+    constructs the attribute dictionary, and updates both the in-memory and persistent storage.
+
+    :param _: Unused parameter (commonly required by handler interface).
+    :param movie_dict: dict[str, dict] – Dictionary of movie titles and their attribute dictionaries.
+    :return: None. Prints success or error messages based on the outcome.
     """
     new_movie_name = get_colored_input("Enter new movie name: ")
 
@@ -130,9 +149,16 @@ def handle_add_movie(_, movie_dict: dict[str, dict[str, float | int]]) -> None:
         )
 
 
-def handle_delete_movie(_, movie_dict: dict[str, dict[str, float | int]]) -> None:
+def handle_delete_movie(_, movie_dict: dict[str, dict]) -> None:
     """
     Handles user input to delete a movie from the database.
+
+    Prompts the user to enter a movie title. If the movie exists in the database,
+    it will be removed from both the in-memory dictionary and persistent storage.
+
+    :param _: Unused parameter (commonly required by handler interface).
+    :param movie_dict: dict[str, dict] – Dictionary of movie titles and their attribute dictionaries.
+    :return: None. Prints confirmation or error message depending on outcome.
     """
     if not movie_dict:
         return print_colored_output("❌ No movies to delete.", COLOR_ERROR)
@@ -164,7 +190,7 @@ def handle_delete_movie(_, movie_dict: dict[str, dict[str, float | int]]) -> Non
         )
 
 
-def handle_update_movie(_, movie_dict: dict[str, dict[str, float | int]]) -> None:
+def handle_update_movie(_, movie_dict: dict[str, dict]) -> None:
     """
     Handles user input to update the rating of a specific movie in the database.
 
@@ -202,9 +228,7 @@ def handle_update_movie(_, movie_dict: dict[str, dict[str, float | int]]) -> Non
         return print_colored_output(f"❌ Error updating movie rating: {e}", COLOR_ERROR)
 
 
-def handle_show_movie_statistics(
-    _, movie_dict: dict[str, dict[str, float | int]]
-) -> None:
+def handle_show_movie_statistics(_, movie_dict: dict[str, dict]) -> None:
     """
     Handles the process of calculating and displaying movie statistics,
     including average rating, median rating, best and worst movies.
@@ -228,7 +252,7 @@ def handle_show_movie_statistics(
     return print_movies_statistics(average_rate, median_rate, best_movies, worst_movies)
 
 
-def handle_random_movie(_, movie_dict: dict[str, dict[str, float | int]]) -> None:
+def handle_random_movie(_, movie_dict: dict[str, dict]) -> None:
     """
     Selects a random movie from the database and displays its details.
 
@@ -247,7 +271,7 @@ def handle_random_movie(_, movie_dict: dict[str, dict[str, float | int]]) -> Non
     return print_movie(title, details)
 
 
-def handle_search_movie(_, movie_dict: dict[str, dict[str, float | int]]) -> None:
+def handle_search_movie(_, movie_dict: dict[str, dict]) -> None:
     """
     Handles the search functionality for finding movies by name.
 
@@ -264,9 +288,7 @@ def handle_search_movie(_, movie_dict: dict[str, dict[str, float | int]]) -> Non
     return print_search_results(matches)
 
 
-def handle_sorted_movies_by_attribute(
-    _, movie_dict: dict[str, dict[str, float | int]]
-) -> None:
+def handle_sorted_movies_by_attribute(_, movie_dict: dict[str, dict]) -> None:
     """
     Handles the process of retrieving and displaying movies sorted by a selected attribute. (BONUS)
 
@@ -306,13 +328,11 @@ def handle_sorted_movies_by_attribute(
     return print_movies(sorted_movies)
 
 
-def handle_create_histogram_by_attribute(
-    _, movie_dict: dict[str, dict[str, float | int]]
-) -> None:
+def handle_create_histogram_by_attribute(_, movie_dict: dict[str, dict]) -> None:
     """
     Handles the creation and saving of a histogram for a user-selected attribute.
 
-    Prompts the user to enter an attribute (e.g., "rating", "release") and a file name,
+    Prompts the user to enter an attribute (e.g., "rating", "year") and a file name,
     then generates and saves the corresponding histogram. Repeats if the attribute is invalid.
 
     :param _: Unused parameter.
@@ -342,7 +362,7 @@ def handle_create_histogram_by_attribute(
     return create_histogram_by_attribute(movie_dict, attribute)
 
 
-def handle_filter_movies(_, movie_dict) -> None:
+def handle_filter_movies(_, movie_dict: dict[str, dict]) -> None:
     """
     Handles user input to filter movies by rating and release year range.
 
@@ -392,3 +412,32 @@ def handle_filter_movies(_, movie_dict) -> None:
     )
 
     return filter_movies_by_attributes(movie_dict, min_rating, start_year, end_year)
+
+
+def handle_generate_website(_, movie_dict: dict[str, dict]) -> None:
+    """
+    Generates a website displaying the current list of movies.
+
+    Loads an HTML template, replaces predefined placeholders with actual content
+    such as a custom title and generated movie cards, and saves the final HTML output.
+
+    :param _: Unused parameter (required by handler interface)
+    :param movie_dict: dict[str, dict] – Dictionary of movie titles and their attribute dictionaries
+    :return: None
+    """
+    # Load the HTML template from file
+    html_template = data_io.load_data(HTML_TEMPLATE_FILE)
+
+    # Replace the title placeholder with the new content
+    html_template = replace_placeholder_with_html_content(
+        html_template, PLACEHOLDER_TITLE, "My Movie App"
+    )
+
+    movie_card_html = generate_movie_html_content(movie_dict)
+
+    # Replace the movie grid placeholder with the same content
+    html_template = replace_placeholder_with_html_content(
+        html_template, PLACEHOLDER_MOVIE_GRID, movie_card_html
+    )
+    # Save the new html content to an index.html file
+    data_io.save_data(HTML_OUTPUT_FILE, html_template)

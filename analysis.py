@@ -13,6 +13,9 @@ These functions are read-only and do not modify the provided movie dictionary.
 
 They are primarily invoked by handler functions to generate statistics and analysis
 outputs for user-facing features.
+
+Author: Martin Haferanke
+Date: 25.05.2025
 """
 
 from random import Random

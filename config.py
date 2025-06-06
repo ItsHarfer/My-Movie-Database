@@ -6,6 +6,8 @@ from colorama import Fore, Style
 DATA_FILE = "data.json"
 HISTOGRAM_FILE = "speed_histogram.png"
 INTERACTIVE_MAP_FILE = "ships_map.html"
+HTML_TEMPLATE_FILE = "_static/index_template.html"
+HTML_OUTPUT_FILE = "_static/index.html"
 
 # ====================
 # External Resources
@@ -67,7 +69,10 @@ FIRST_MOVIE_RELEASE = 1888
 # Menu Selection Limits
 # ====================
 MENU_MIN_INDEX = 0
-MENU_MAX_INDEX = 10
+MENU_MAX_INDEX = 11
 
 # Commands that require movies to be present in movie_dict
 COMMANDS_REQUIRING_MOVIES = {1, 3, 4, 5, 6, 7, 8, 9, 10}
+
+PLACEHOLDER_TITLE = "__TEMPLATE_TITLE__"
+PLACEHOLDER_MOVIE_GRID = "__TEMPLATE_MOVIE_GRID__"
