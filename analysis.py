@@ -20,7 +20,7 @@ Date: 25.05.2025
 
 from random import Random
 import printers as printer
-from config import COLOR_ERROR
+from config.config import COLOR_ERROR
 
 
 def get_calculated_average_rate(

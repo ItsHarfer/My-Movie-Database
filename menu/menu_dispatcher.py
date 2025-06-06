@@ -19,7 +19,7 @@ Author: Martin Haferanke
 Date: 06.06.2025
 """
 
-from handlers import (
+from menu_handlers import (
     handle_quit_application,
     handle_show_movies,
     handle_add_movie,

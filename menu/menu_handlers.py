@@ -1,5 +1,5 @@
 """
-handlers.py
+menu_handlers.py
 
 This module defines handler functions for user interactions in the movie database application.
 
@@ -22,15 +22,14 @@ Date: 06.06.2025
 
 import requests
 
-import data_io
-import movie_storage_sql
+from movie_storage import movie_storage_sql, data_io
 from analysis import (
     get_calculated_average_rate,
     get_calculated_median_rate,
     get_all_movies_extremes_by_mode,
     get_random_movie,
 )
-from config import (
+from config.config import (
     FIRST_MOVIE_RELEASE,
     RATING_BASE,
     RATING_LIMIT,
