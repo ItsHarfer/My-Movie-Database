@@ -19,16 +19,15 @@ Required modules:
 - movie_storage_sql.py: Handles SQL database interactions
 - menu.py, menu_dispatcher.py: Menu definitions and logic
 - printers.py: Console output formatting
-- handlers.py, helpers.py: Input handling, filtering, validation, and HTML rendering
+- menu_handlers.py, helpers.py: Input handling, filtering, validation, and HTML rendering
 - analysis.py: Visualization and analysis tools
 
 Author: Martin Haferanke
 Date: 06.06.2025
 """
 
-import movie_storage
-import movie_storage_sql
-from menu import run_menu_loop
+from movie_storage import movie_storage_sql
+from menu.menu import run_menu_loop
 from printers import print_title
 
 

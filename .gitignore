@@ -116,7 +116,7 @@ dmypy.json
 # ====================
 # User-specified files
 # ====================
-config.py
+config/config.py
 material_theme_project_new.xml
 modules.xml
 Movie Project Part 2.iml

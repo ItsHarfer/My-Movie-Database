@@ -16,7 +16,7 @@ Date: 06.06.2025
 
 from colorama import Style
 
-from config import (
+from config.config import (
     COLOR_MAP,
     COLOR_TEXT,
     COLOR_VALUES,

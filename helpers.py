@@ -24,7 +24,7 @@ import sys
 from colorama import Style
 from matplotlib import pyplot as plt
 
-from config import (
+from config.config import (
     COLOR_MAP,
     COLOR_INPUT,
     COLOR_SUCCESS,
