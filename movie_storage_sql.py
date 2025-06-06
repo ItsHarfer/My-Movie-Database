@@ -1,3 +1,16 @@
+"""
+movie_storage_sql.py
+
+Provides SQL-based persistence for the Movie Database application.
+
+This module manages all database interactions related to movies, including
+creating the database and table, and executing CRUD operations. It acts as
+a backend interface for storing and modifying movie records.
+
+Author: Martin Haferanke
+Date: 06.06.2025
+"""
+
 from sqlalchemy import create_engine, text
 
 from config import COLOR_ERROR, COLOR_SUCCESS
@@ -28,7 +41,11 @@ with engine.connect() as connection:
 
 
 def list_movies():
-    """Retrieve all movies from the database."""
+    """
+    Retrieves all movies stored in the SQL database and returns them as a dictionary.
+
+    :return: Dictionary of movie titles with associated year, rating, and poster URL.
+    """
     with engine.connect() as connection:
         result = connection.execute(
             text("SELECT title, year, rating, poster_url FROM movies")
@@ -36,6 +53,7 @@ def list_movies():
         movies = result.fetchall()
 
     return {
+        # Build and return dict with title as key and year, rating and poster as values
         row[0]: {"year": row[1], "rating": row[2], "poster_url": row[3]}
         for row in movies
     }
@@ -43,11 +61,11 @@ def list_movies():
 
 def add_movie(new_movie_title: str, attributes: dict[str, float | int]) -> None:
     """
-    Adds a new movie with numeric attributes to the database and the local dictionary, if it doesn't already exist.
+    Adds a new movie record to the SQL database with the provided attributes.
 
-    :param new_movie_title: The title of the movie to be added.
-    :param attributes: Dictionary of numeric attributes (e.g. {"rating": 8.5, "release": 1994}).
-    :return: None
+    :param new_movie_title: Title of the movie to be added.
+    :param attributes: Dictionary containing "year", "rating", and "poster_url".
+    :return: None. Prints a success or error message.
     """
     try:
         # Also add the movie to the SQL database
@@ -73,7 +91,12 @@ def add_movie(new_movie_title: str, attributes: dict[str, float | int]) -> None:
 
 
 def delete_movie(title):
-    """Delete a movie from the database."""
+    """
+    Deletes a movie entry from the SQL database based on its title.
+
+    :param title: The title of the movie to delete.
+    :return: None. Prints a success or error message.
+    """
     with engine.connect() as connection:
         try:
             query = "DELETE FROM movies WHERE title = :title"
@@ -86,10 +109,16 @@ def delete_movie(title):
 
 
 def update_movie(title, rating):
-    """Update a movie's rating in the database."""
+    """
+    Updates the rating of an existing movie in the SQL database.
+
+    :param title: Title of the movie to update.
+    :param rating: New rating value to set.
+    :return: None. Prints a success or error message.
+    """
     with engine.connect() as connection:
         try:
-            query = "UPDATE movies SET title = :title, rating = :rating WHERE title = :title"
+            query = "UPDATE movies SET rating = :rating WHERE title = :title"
             params = {"title": title, "rating": rating}
             connection.execute(text(query), params)
             connection.commit()

@@ -1,14 +1,22 @@
 """
 menu_dispatcher.py
 
-This module defines the mapping between user menu command numbers and their corresponding
-handler functions and descriptions.
+Centralized command dispatcher for the Movie Database application.
 
-The MOVIE_COMMAND_DISPATCHER dictionary connects each command number to a handler
-function and a label used for user-facing menus.
+This module defines the mapping between numerical menu commands and their
+corresponding handler functions and descriptions.
 
-This centralized mapping is used by the main menu loop to invoke appropriate functionality
-based on user input.
+The `MOVIE_COMMAND_DISPATCHER` dictionary enables the main menu loop to dynamically
+route user input to the appropriate functionality, providing a clean and extensible
+architecture for command handling.
+
+Each command is associated with:
+- a numeric identifier (as displayed in the CLI menu)
+- a callable function (from the handlers module)
+- a user-facing description label
+
+Author: Martin Haferanke
+Date: 06.06.2025
 """
 
 from handlers import (
@@ -23,6 +31,7 @@ from handlers import (
     handle_sorted_movies_by_attribute,
     handle_create_histogram_by_attribute,
     handle_filter_movies,
+    handle_generate_website,
 )
 
 # Dispatcher mapping for movie operations
@@ -70,5 +79,9 @@ MOVIE_COMMAND_DISPATCHER = {
     10: {
         "handler": handle_filter_movies,
         "label": "Show only movies matching your rating and year criteria",
+    },
+    11: {
+        "handler": handle_generate_website,
+        "label": "Generate website for your favorite movies.",
     },
 }

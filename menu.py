@@ -10,6 +10,9 @@ This module is responsible for:
 
 It connects user input to the corresponding handler functions defined in the dispatcher,
 allowing interaction with the movie dataset via the command-line interface.
+
+Author: Martin Haferanke
+Date: 06.06.2025
 """
 
 from config import (

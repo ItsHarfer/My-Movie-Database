@@ -9,6 +9,9 @@ This module centralizes presentation logic, including:
 - Ensuring consistent visual formatting across the CLI
 
 Separating these responsibilities helps maintain a clean structure and supports consistent UI behavior.
+
+Author: Martin Haferanke
+Date: 06.06.2025
 """
 
 from colorama import Style
