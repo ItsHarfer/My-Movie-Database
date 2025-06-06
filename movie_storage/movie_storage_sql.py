@@ -13,11 +13,11 @@ Date: 06.06.2025
 
 from sqlalchemy import create_engine, text
 
-from config import COLOR_ERROR, COLOR_SUCCESS
+from config.config import COLOR_ERROR, COLOR_SUCCESS
 from printers import print_colored_output
 
 # Define the database URL
-DB_URL = "sqlite:///movies.db"
+DB_URL = "sqlite:///data/movies.db"
 
 # Create the engine
 engine = create_engine(DB_URL, echo=True)

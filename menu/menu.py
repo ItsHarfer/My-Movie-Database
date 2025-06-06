@@ -15,7 +15,7 @@ Author: Martin Haferanke
 Date: 06.06.2025
 """
 
-from config import (
+from config.config import (
     MENU_MIN_INDEX,
     MENU_MAX_INDEX,
     COLOR_MENU_OPTIONS,
