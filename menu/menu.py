@@ -22,7 +22,7 @@ from config.config import (
     COLOR_ERROR,
     COMMANDS_REQUIRING_MOVIES,
 )
-from menu_dispatcher import MOVIE_COMMAND_DISPATCHER
+from menu.menu_dispatcher import MOVIE_COMMAND_DISPATCHER
 from helpers import get_input_by_type_and_range, get_colored_input
 from printers import print_title, print_colored_output
 
