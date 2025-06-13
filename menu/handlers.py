@@ -74,7 +74,7 @@ from printers import (
 from dotenv import load_dotenv
 import os
 
-from users.users import abort_if_no_active_user
+from users.users import abort_if_no_active_user, get_active_user
 
 # Initialize .env to get API Key and API_URL for secure access
 load_dotenv()
@@ -476,12 +476,14 @@ def handle_generate_website(_, movie_dict: dict[str, dict], ___) -> None:
 
     abort_if_no_active_user()
 
+    username = get_active_user()
+
     # Load the HTML template from file
     html_template = data_io.load_data(HTML_TEMPLATE_FILE)
 
     # Replace the title placeholder with the new content
     html_template = replace_placeholder_with_html_content(
-        html_template, PLACEHOLDER_TITLE, "My Movie App"
+        html_template, PLACEHOLDER_TITLE, f"{username}'s Movie App"
     )
 
     movie_card_html = generate_movie_html_content(movie_dict)
