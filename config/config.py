@@ -78,3 +78,40 @@ COMMANDS_REQUIRING_MOVIES = {1, 3, 4, 5, 6, 7, 8, 9, 10}
 
 PLACEHOLDER_TITLE = "__TEMPLATE_TITLE__"
 PLACEHOLDER_MOVIE_GRID = "__TEMPLATE_MOVIE_GRID__"
+
+
+# Flags
+COUNTRY_NAME_TO_CODE = {
+    "United States": "US",
+    "Germany": "DE",
+    "France": "FR",
+    "United Kingdom": "GB",
+    "Japan": "JP",
+    "India": "IN",
+    "South Korea": "KR",
+    "Italy": "IT",
+    "Spain": "ES",
+    "Canada": "CA",
+    "Australia": "AU",
+    "China": "CN",
+    "Mexico": "MX",
+    "Brazil": "BR",
+    "Russia": "RU",
+    "Netherlands": "NL",
+    "Turkey": "TR",
+    "Indonesia": "ID",
+    "Thailand": "TH",
+    "Philippines": "PH",
+    "Poland": "PL",
+    "Egypt": "EG",
+    "Portugal": "PT",
+    "Argentina": "AR",
+    "Iran": "IR",
+    "Sweden": "SE",
+    "Denmark": "DK",
+    "Finland": "FI",
+    "Norway": "NO",
+    "Switzerland": "CH",
+    "Ireland": "IE",
+    "Greece": "GR",
+}

@@ -31,6 +31,7 @@ from config.config import (
     COLOR_ERROR,
     HISTOGRAM_WIDTH,
     HISTOGRAM_HEIGHT,
+    COUNTRY_NAME_TO_CODE,
 )
 from printers import print_colored_output, print_movies, print_title
 
@@ -380,9 +381,10 @@ def serialize_movie(movie_obj: dict) -> str:
     rating = movie_obj.get("rating", "Unknown")
     note = movie_obj.get("note", "")
     poster_url = movie_obj.get("poster_url", "Unknown")
-    imdb_id = movie_obj.get("imdb_id", "")
+    imdb_id = movie_obj.get("imdb_id", "Unknown")
     imdb_url = f"https://www.imdb.com/title/{imdb_id}"
-    return generate_movie_card(title, year, rating, note, poster_url, imdb_url)
+    country = movie_obj.get("country", "Unknown")
+    return generate_movie_card(title, year, rating, note, poster_url, imdb_url, country)
 
 
 def generate_movie_card(
@@ -392,12 +394,14 @@ def generate_movie_card(
     note: str,
     poster_url: str,
     imdb_url: str,
+    country: str,
 ) -> str:
     """
     Generates an HTML list item representing a movie card.
 
     Formats the provided movie data into a styled HTML snippet.
 
+    :param country: Country(s) of the movie.
     :param note: Users preferred note about the movie.
     :param title: The title of the movie.
     :param year: The release year of the movie.
@@ -406,15 +410,25 @@ def generate_movie_card(
     :param imdb_url: URL to the movie's IMDb page.
     :return: HTML string for the movie card.
     """
+
+    country_codes = extract_country_codes(country)
+
     output = ""
     output += f"<li>\n"
     output += f'  <div class="movie">\n'
     output += f'    <div class="poster-wrapper" title="{note}">\n'
+
     output += f'      <a href="{imdb_url}" target="_blank">\n'
     output += f'        <img class="movie-poster" src="{poster_url}" alt="{title}">\n'
     output += f"      </a>\n"
     output += f"    </div>\n"
     output += f'    <div class="movie-title">{title}</div>\n'
+    for code in country_codes:
+        output += f"""    <img 
+                            class="movie-flag" 
+                            src="https://flagcdn.com/16x12/{code.lower()}.png" 
+                            srcset="https://flagcdn.com/32x24/{code.lower()}.png 2x, https://flagcdn.com/48x36/{code.lower()}.png 3x"
+                            width="16" height="12" alt="{code.upper()}">\n"""
     output += f'    <div class="movie-year">{year}</div>\n'
     output += f'    <div class="movie-rating-stars" style="--rating:{rating}" title="{rating}/10"></div>\n'
     output += f"  </div>\n"
@@ -443,3 +457,40 @@ def execute_operation(user_input: int, data: dict, dispatcher: dict[int, dict]) 
     result = command_data["handler"](None, data, args)
 
     return bool(result)
+
+
+def extract_country_codes(country_string: str) -> list[str]:
+    """
+    Converts a string of comma-separated country names into a list of ISO alpha-2 codes.
+
+    :param country_string: Comma-separated country names (e.g. "United States, Canada").
+    :return: List of valid ISO alpha-2 codes (e.g. ['US', 'CA']).
+    """
+    return [
+        COUNTRY_NAME_TO_CODE.get(country.strip())
+        for country in country_string.split(",")
+        if COUNTRY_NAME_TO_CODE.get(country.strip())
+    ]
+
+
+def parse_fields(data: dict, required_fields: dict[str, type]) -> dict:
+    """
+    Extracts and converts specified fields from a data dictionary.
+
+    :param data: The source dictionary (e.g., API response).
+    :param required_fields: A dict where keys are field names to extract
+                            and values are the expected Python types (e.g., float, int, str).
+    :return: A dict with the extracted and converted fields.
+    :raises ValueError: if a field is missing or cannot be converted.
+    """
+    result = {}
+    for field, expected_type in required_fields.items():
+        if field not in data:
+            raise ValueError(f"Missing required field: {field}")
+
+        raw_value = data[field]
+        try:
+            result[field] = expected_type(raw_value)
+        except (ValueError, TypeError):
+            raise ValueError(f"Invalid value for field '{field}': {raw_value}")
+    return result

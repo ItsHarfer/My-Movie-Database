@@ -59,6 +59,7 @@ from helpers import (
     filter_movies_by_attributes,
     replace_placeholder_with_html_content,
     generate_movie_html_content,
+    parse_fields,
 )
 
 from printers import (
@@ -146,37 +147,29 @@ def handle_add_movie(_, movie_dict: dict[str, dict], ___) -> None:
                 f"❌ Movie '{new_movie_name}' not found in OMDb API.", COLOR_ERROR
             )
 
-        if not all(k in data for k in ("imdbRating", "Year", "Poster")):
-            return print_colored_output(
-                "❌ Incomplete data received from API.", COLOR_ERROR
-            )
+        required_fields = {
+            "imdbRating": float,
+            "Year": int,
+            "imdbID": str,
+            "Country": str,
+        }
 
         try:
-            rating = float(data["imdbRating"])
-        except (ValueError, TypeError):
-            return print_colored_output(
-                f"❌ Invalid rating value for movie '{new_movie_name}'.", COLOR_ERROR
-            )
+            parsed_data = parse_fields(data, required_fields)
+        except ValueError as e:
+            return print_colored_output(f"❌ {e}", COLOR_ERROR)
 
-        try:
-            year = int(data["Year"])
-        except (ValueError, TypeError):
-            return print_colored_output(
-                f"❌ Invalid year value for movie '{new_movie_name}'.", COLOR_ERROR
-            )
-
-        try:
-            imdb_id = data["imdbID"]
-        except (ValueError, TypeError):
-            return print_colored_output(
-                f"❌ Invalid imdbID value for movie '{new_movie_name}'.", COLOR_ERROR
-            )
-
+        rating = parsed_data["imdbRating"]
+        year = parsed_data["Year"]
+        imdb_id = parsed_data["imdbID"]
+        country = parsed_data["Country"]
+        print(country)
         attributes = {
             "rating": rating,
             "year": year,
             "poster_url": data["Poster"],
             "imdb_id": imdb_id,
+            "country": country,
         }
 
         movie_dict[new_movie_name] = attributes

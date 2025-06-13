@@ -120,12 +120,14 @@ def print_movie(title: str, movie: dict) -> None:
     note = movie.get("note", "")
     poster_url = movie.get("poster_url", "unknown")
     imdb_id = movie.get("imdb_id", "")
+    country = movie.get("country", "")
 
     print_colored_output(f"- {title} ({year}): ", COLOR_TITLE, end="")
     print_colored_output(f"{rating} ", COLOR_VALUES, end="")
     print_colored_output(f"Poster: {poster_url}", COLOR_SUCCESS, end="")
     print_colored_output(f" Note: {note}", COLOR_SUB_TITLE, end="")
-    print_colored_output(f" IMDB id: {imdb_id}", COLOR_VALUES)
+    print_colored_output(f" IMDB id: {imdb_id}", COLOR_VALUES, end="")
+    print_colored_output(f" Country: {country}", COLOR_SUB_TITLE)
 
 
 def print_movies(movie_dict: dict[str, dict[str, float | int]]) -> None:
