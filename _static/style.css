@@ -1,7 +1,9 @@
 body {
   background: #F5F5F0;
   color: black;
-  font-family: Monaco;
+  font-family: Monaco, monospace;
+  margin: 0;
+  padding: 0;
 }
 
 .list-movies-title {
@@ -15,15 +17,17 @@ body {
 .movie-grid {
   list-style-type: none;
   padding: 0;
-  margin: 0;
-  margin-top: 20px;
+  margin: 20px auto;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
+  gap: 20px;
+  max-width: 1200px;
 }
 
 .movie-grid li {
-  padding: 10px 15px;
-  text-align: left;
+  padding: 0;
+  text-align: center;
 }
 
 .movie {
@@ -44,9 +48,58 @@ body {
   color: #999;
 }
 
-
 .movie-poster {
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-    width: 128px;
-    height: 193px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  width: 128px;
+  height: 193px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.poster-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-note {
+  visibility: hidden;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  text-align: center;
+  padding: 6px 8px;
+  border-radius: 5px;
+  font-size: 0.75em;
+  position: absolute;
+  bottom: 105%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.poster-wrapper:hover .tooltip-note {
+  visibility: visible;
+  opacity: 1;
+}
+
+@media (max-width: 600px) {
+  .movie {
+    width: 100px;
+  }
+
+  .movie-poster {
+    width: 92px;
+    height: 138px;
+  }
+
+  .movie-title,
+  .movie-year {
+    font-size: 0.7em;
+  }
+
+  .tooltip-note {
+    font-size: 0.65em;
+  }
 }

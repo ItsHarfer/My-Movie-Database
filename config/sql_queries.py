@@ -9,19 +9,20 @@ CREATE TABLE IF NOT EXISTS movies (
     title TEXT UNIQUE NOT NULL,
     year INTEGER NOT NULL,
     rating REAL NOT NULL, 
+    note TEXT DEFAULT '',
     poster_url TEXT NOT NULL
 )
 """
 
 SQL_SELECT_MOVIES_BY_USER_ID = """
-SELECT title, year, rating, poster_url 
+SELECT title, year, rating, note, poster_url 
 FROM movies 
 WHERE user_id = :user_id
 """
 
 SQL_INSERT_MOVIE = """
-INSERT INTO movies (user_id, title, year, rating, poster_url) 
-VALUES (:user_id, :title, :year, :rating, :poster_url)
+INSERT INTO movies (user_id, title, year, rating, note, poster_url) 
+VALUES (:user_id, :title, :year, :rating, :note, :poster_url)
 """
 
 SQL_DELETE_MOVIE = """
@@ -32,6 +33,12 @@ WHERE title = :title AND user_id = :user_id
 SQL_UPDATE_MOVIE_RATING = """
 UPDATE movies 
 SET rating = :rating 
+WHERE title = :title AND user_id = :user_id
+"""
+
+SQL_UPDATE_MOVIE_NOTE = """
+UPDATE movies 
+SET note = :note 
 WHERE title = :title AND user_id = :user_id
 """
 

@@ -43,6 +43,7 @@ from config.config import (
     PLACEHOLDER_TITLE,
     PLACEHOLDER_MOVIE_GRID,
     HTML_OUTPUT_FILE,
+    COLOR_TITLE,
 )
 from helpers import (
     quit_application,
@@ -245,18 +246,16 @@ def handle_update_movie(_, movie_dict: dict[str, dict], ___) -> None:
                 f"❌ Movie '{movie_name}' not found for the active user.", COLOR_ERROR
             )
 
-        new_rating = get_input_by_type_and_range(
-            "Enter the new rating for the movie: ", float, RATING_BASE, RATING_LIMIT
-        )
+        new_note = get_colored_input("Enter movie note: ", COLOR_TITLE)
 
-        # Update rating in memory
-        movie_dict[movie_name]["rating"] = new_rating
+        # Update note in memory
+        movie_dict[movie_name]["note"] = new_note
 
         # Update rating in persistent storage
-        movie_storage.storage_sql.update_movie(active_user_id, movie_name, new_rating)
+        movie_storage.storage_sql.update_movie(active_user_id, movie_name, new_note)
 
         return print_colored_output(
-            f"✅ Movie '{movie_name}' rating updated to {new_rating}.",
+            f"✅ Movie '{movie_name}' personal note updated to '{new_note}'.",
             COLOR_SUCCESS,
         )
 
