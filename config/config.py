@@ -69,7 +69,9 @@ FIRST_MOVIE_RELEASE = 1888
 # Menu Selection Limits
 # ====================
 MENU_MIN_INDEX = 0
-MENU_MAX_INDEX = 11
+MENU_MAX_INDEX = 12
+
+USER_MENU_MIN_INDEX = 0
 
 # Commands that require movies to be present in movie_dict
 COMMANDS_REQUIRING_MOVIES = {1, 3, 4, 5, 6, 7, 8, 9, 10}

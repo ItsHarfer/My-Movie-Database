@@ -1,59 +1,36 @@
 """
-menu.py
+menu / menu.py
 
-Provides the menu logic for the  application.
+Provides the menu logic for the Movie Database application.
 
 This module is responsible for:
-- Displaying available menu options based on the dispatcher
-- Executing user-selected operations
-- Managing the main menu loop
+- Displaying available menu options using the dispatcher
+- Executing user-selected operations based on input
+- Managing the main menu loop and session lifecycle
+- Dynamically greeting users by name
+- Exiting the menu loop if no user is logged in
 
 It connects user input to the corresponding handler functions defined in the dispatcher,
-allowing interaction with the movie dataset via the command-line interface.
+enabling interaction with the movie dataset via the command-line interface.
 
 Author: Martin Haferanke
-Date: 06.06.2025
+Date: 13.06.2025
 """
 
 from config.config import (
     MENU_MIN_INDEX,
     MENU_MAX_INDEX,
     COLOR_MENU_OPTIONS,
-    COLOR_ERROR,
-    COMMANDS_REQUIRING_MOVIES,
+    COLOR_SUCCESS,
 )
-from menu.menu_dispatcher import MOVIE_COMMAND_DISPATCHER
-from helpers import get_input_by_type_and_range, get_colored_input
+from menu.dispatcher import MOVIE_COMMAND_DISPATCHER
+from helpers import get_input_by_type_and_range, get_colored_input, execute_operation
 from printers import print_title, print_colored_output
+from users import users
+from users.users import get_active_user_id
 
 
-def execute_operation(
-    user_input: int, movie_dict: dict[str, dict[str, float | int]]
-) -> None:
-    """
-    Executes the selected command from the user by invoking the corresponding handler.
-
-    :param user_input: Integer representing the selected menu index.
-    :param movie_dict: Dictionary of movie titles and their attribute dictionaries.
-    :return: None
-    """
-    command_data = MOVIE_COMMAND_DISPATCHER.get(user_input)
-
-    if not command_data:
-        return print_colored_output(
-            f"Unknown command '{user_input}'. Please select a valid option.",
-            COLOR_ERROR,
-        )
-
-    if user_input in COMMANDS_REQUIRING_MOVIES and not movie_dict:
-        return print_colored_output(
-            "❌ No movies available. Can't execute operation.", COLOR_ERROR
-        )
-
-    return command_data["handler"](None, movie_dict)
-
-
-def show_menu_options() -> None:
+def show_movie_menu_options() -> None:
     """
     Displays the main menu options using the command dispatcher labels.
 
@@ -67,7 +44,7 @@ def show_menu_options() -> None:
     print()
 
 
-def run_menu_loop(movie_dict: dict[str, dict[str, float | int]]) -> None:
+def run_movie_menu_loop(movie_dict: dict[str, dict[str, float | int]]) -> None:
     """
     Runs the interactive menu loop, allowing the user to select and execute commands.
 
@@ -80,8 +57,13 @@ def run_menu_loop(movie_dict: dict[str, dict[str, float | int]]) -> None:
     :param movie_dict: Dictionary of movie titles and their attribute dictionaries.
     :return: None
     """
+
     while True:
-        show_menu_options()
+        print()
+        print_colored_output(
+            f"🎬 Hey {users.get_active_user()}, welcome back!\n", COLOR_SUCCESS
+        )
+        show_movie_menu_options()
         user_choice = int(
             get_input_by_type_and_range(
                 f"Enter command number ({MENU_MIN_INDEX}-{MENU_MAX_INDEX}): ",
@@ -90,5 +72,10 @@ def run_menu_loop(movie_dict: dict[str, dict[str, float | int]]) -> None:
                 MENU_MAX_INDEX,
             )
         )
-        execute_operation(user_choice, movie_dict)
+        execute_operation(user_choice, movie_dict, MOVIE_COMMAND_DISPATCHER)
+
         get_colored_input("\nPress enter to continue...")
+
+        # Exit loop if the user is not logged in
+        if not get_active_user_id():
+            break

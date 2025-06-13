@@ -15,7 +15,7 @@ This module includes reusable helper functions for:
 It supports clean modularization of utility logic and enhances maintainability and code reuse.
 
 Author: Martin Haferanke
-Date: 06.06.2025
+Date: 13.06.2025
 """
 
 from datetime import datetime
@@ -59,16 +59,16 @@ def get_colored_input(prompt: str, color: str = COLOR_INPUT) -> str:
     return input(color_prefix + prompt + Style.RESET_ALL).strip()
 
 
-def get_type_validated_input(prompt: str, expected_type: type):
+def get_type_validated_input(prompt: str, expected_type: type) -> int | float | str:
     """
     Prompts the user for input and converts it to the expected type.
 
-    Repeats the input prompt until the user provides a value that can be
-    converted to the specified data type (e.g., int, float).
+    Repeats until the input can be converted to the given data type (e.g., int, float, str).
+    Displays an error message for invalid conversions.
 
     :param prompt: Text shown to the user.
-    :param expected_type: The expected Python type (e.g., int, float, str).
-    :return: The converted input value.
+    :param expected_type: The expected Python type.
+    :return: The input value converted to the expected type.
     """
     while True:
         user_input = get_colored_input(prompt)
@@ -281,8 +281,10 @@ def find_movie(movie_dict: dict[str, dict]) -> str | None:
     """
     Prompts the user to enter a movie name and returns it if it exists in the database.
 
+    Repeats input prompt until a matching movie title is found.
+
     :param movie_dict: Dictionary of movie titles and their attribute dictionaries.
-    :return: The title of the movie entered by the user, or None if the database is empty.
+    :return: The title of the selected movie, or None if no movies exist.
     """
     if not movie_dict:
         return print_colored_output(
@@ -300,11 +302,11 @@ def find_movie(movie_dict: dict[str, dict]) -> str | None:
             return movie_to_update
 
 
-def extract_valid_attributes(
-    movie_dict: dict[str, dict],
-) -> set[str] | None:
+def extract_valid_attributes(movie_dict: dict[str, dict]) -> set[str]:
     """
     Extracts a set of valid attribute names from the first movie entry in the dictionary.
+
+    Returns an empty set if the dictionary is empty or invalid.
 
     :param movie_dict: Dictionary of movie titles and their attributes.
     :return: Set of attribute names.
@@ -380,18 +382,19 @@ def serialize_movie(movie_obj: dict) -> str:
     return generate_movie_card(title, year, rating, poster_url)
 
 
-def generate_movie_card(title, year, rating, poster_url) -> str:
+def generate_movie_card(
+    title: str, year: str | int, rating: str | float, poster_url: str
+) -> str:
     """
     Generates an HTML list item representing a movie card.
 
-    This function formats the provided movie information (title, year, rating, and poster URL)
-    into a styled HTML snippet suitable for inclusion in a movie grid on a webpage.
+    Formats the provided movie data into a styled HTML snippet.
 
     :param title: The title of the movie.
     :param year: The release year of the movie.
     :param rating: The IMDb rating of the movie.
     :param poster_url: URL of the movie poster image.
-    :return: A string of HTML representing the movie card.
+    :return: HTML string for the movie card.
     """
     output = ""
     output += f"<li>\n"
@@ -403,3 +406,26 @@ def generate_movie_card(title, year, rating, poster_url) -> str:
     output += f"  </div>\n"
     output += f"</li>\n"
     return output
+
+
+def execute_operation(user_input: int, data: dict, dispatcher: dict[int, dict]) -> bool:
+    """
+    Executes the selected command from the user by invoking the corresponding handler out from the dispatcher.
+
+    :param user_input: Index of the selected menu command.
+    :param data: Context data passed to the handler (e.g., user or movie data).
+    :param dispatcher: Mapping of menu indices to command handler definitions.
+    :return: True if the handler was successfully executed, False otherwise.
+    """
+    command_data = dispatcher.get(user_input)
+    if not command_data:
+        print_colored_output(
+            f"Unknown command '{user_input}'. Please select a valid option.",
+            COLOR_ERROR,
+        )
+        return False
+
+    args = command_data.get("args", [])
+    result = command_data["handler"](None, data, args)
+
+    return bool(result)

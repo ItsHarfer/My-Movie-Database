@@ -1,12 +1,13 @@
-# My Movie Database – SQL Edition 🎬
+# My Movie Database – SQL / HTML / API Edition 🎬
 
-A Python-based application for managing a movie database, accessible via both Command Line Interface (CLI) and a static web interface. Users can add, view, update, delete, and analyze movies with automatic data fetching via the OMDb API. All data is persisted using SQLite.
+A Python-based application for managing a movie database, accessible via both Command Line Interface (CLI) and a static web interface. Users can add, view, update, delete, and analyze movies with automatic data fetching via the OMDb API. All data is persisted using SQLite. Multi-user support is now included with login and user-specific movie libraries.
 
 ---
 
 ## Features
 
 - **Dual Interface:** Command Line Interface (CLI) and Static Web Interface
+- **Multi-User Support:** Manage separate movie collections for each user
 - Add movies by title with automatic data enrichment from the OMDb API
 - Create, Read, Update, Delete (CRUD) movie entries
 - Persistent storage via SQLite database
@@ -34,18 +35,31 @@ A Python-based application for managing a movie database, accessible via both Co
 
 ```
 .
-├── analysis.py           # Rating calculations and statistics
-├── config.py             # Configuration values and constants
-├── .env                  # API key and external URLs (excluded from version control)
-├── handlers.py           # User interaction logic (e.g., add/delete/update/web generation)
-├── helpers.py            # Input validation, filtering, visualizations
-├── main.py               # CLI entry point
-├── menu.py               # Menu structure
-├── menu_dispatcher.py    # Maps menu commands to handlers
-├── movie_crud.py         # Database interaction helpers
-├── movie_storage_sql.py  # SQLAlchemy logic for storage backend
-├── printers.py           # Colored terminal output formatting
-├── requirements.txt      # External Python dependencies
+├── main.py                    # CLI entry point
+├── analysis.py                # Rating calculations and statistics
+├── helpers.py                 # Input validation, filtering, visualizations
+├── printers.py                # Colored terminal output formatting
+├── requirements.txt           # External Python dependencies
+└── .env                       # API keys (excluded from version control)
+├── config/
+│   ├── config.py              # Configuration values and constants
+│   └── sql_queries.py         # SQL query strings
+├── data/
+│   └── movies.db              # SQLite database
+├── menu/
+│   ├── dispatcher.py          # Movie menu dispatcher
+│   ├── handlers.py            # Movie-related command handlers
+│   └── menu.py                # CLI menu loop
+├── movie_storage/
+│   ├── data_io.py             # JSON-based legacy I/O
+│   ├── storage_json.py        # JSON storage backend
+│   └── storage_sql.py         # SQLAlchemy logic for storage backend
+├── users/
+│   ├── dispatcher.py          # User menu dispatcher
+│   ├── handler.py             # User creation and selection logic
+│   ├── menu.py                # User CLI menu loop
+│   ├── users.py               # Active user state management
+│   └── storage_sql.py         # User-specific SQL storage functions
 ```
 
 ---
@@ -98,17 +112,18 @@ Generate Web Interface:
 
 ## Example Operations
 
-- **Add a Movie:** Automatically fetch rating, release year, and poster from OMDb API.
-- **Delete a Movie:** Remove movies by entering their exact titles.
-- **Update a Movie Rating:** Modify existing ratings with validation (1.0–10.0).
-- **View All Movies:** Display all movies with their details.
-- **Search Movies:** Find movies by partial title match.
-- **Movie Statistics:** View average, median, top-rated, and lowest-rated movies.
-- **Random Movie:** Display a randomly selected movie from your database.
-- **Sort Movies:** Organize movies by rating or release year.
-- **Create a Histogram:** Visualize ratings or release years as `.png` images.
-- **Filter Movies:** Filter movies by rating and release year ranges.
-- **Static Web Interface:** Generate a visually appealing web page to overview your movie collection.
+- **👤 User Login/Create:** Select an existing user or create a new one to manage personal collections
+- **🎬 Add a Movie:** Automatically fetch rating, release year, and poster from OMDb API
+- **❌ Delete a Movie:** Remove a movie from the current user's collection by exact title
+- **📝 Update a Movie Rating:** Modify ratings with validation (1.0–10.0)
+- **📋 View All Movies:** Show all movies stored for the current user
+- **🔍 Search Movies:** Find movies by partial match in title
+- **📊 Movie Statistics:** Display average, median, highest, and lowest-rated movies
+- **🎲 Random Movie:** Show a randomly selected movie
+- **↕️ Sort Movies:** Order movies by rating or release year (ascending/descending)
+- **🎯 Filter Movies:** Filter by minimum rating and release year range
+- **📈 Create a Histogram:** Generate bar or scatter plots as `.png` images
+- **🌐 Static Web Interface:** Export all movies to a styled HTML webpage
 
 ---
 

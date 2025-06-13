@@ -1,16 +1,19 @@
 """
-movie_storage.py
+storage_json.py
 
-This module handles low-level storage operations for the movie database application.
+This module handles low-level JSON-based storage operations for the movie database application.
 
-It provides functions to load and save movie data to and from a JSON file,
-and to perform CRUD operations (create, read, update, delete) on individual movie entries.
+It provides functions to:
+- Load and save movie data to/from a JSON file
+- Perform CRUD operations (create, read, update, delete) on individual movie entries
+- Validate basic data integrity and catch I/O or format-related errors
+- Output meaningful user feedback for failed operations
 
-Functions in this module interact directly with the configured data file and
-produce user-facing error messages for I/O and data access issues.
+All data is stored in a dictionary format, with movie titles as keys and
+attribute dictionaries (e.g. rating, year) as values.
 
 Author: Martin Haferanke
-Date: 06.06.2025
+Date: 13.06.2025
 """
 
 import json
