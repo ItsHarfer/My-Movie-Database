@@ -103,3 +103,22 @@ body {
     font-size: 0.65em;
   }
 }
+
+.movie-rating-stars {
+  white-space: nowrap;
+  position: relative;
+  display: inline-block;
+}
+.movie-rating-stars::before {
+  content: "\2605\2605\2605\2605\2605"; /* ★★★★★ */
+  opacity: 0.3;
+}
+.movie-rating-stars::after {
+  content: "\2605\2605\2605\2605\2605"; /* ★★★★★ */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--rating) * 10%);
+  overflow: hidden;
+  color: gold;
+}

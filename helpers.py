@@ -406,7 +406,7 @@ def generate_movie_card(
     output += f"    </div>\n"
     output += f'    <div class="movie-title">{title}</div>\n'
     output += f'    <div class="movie-year">{year}</div>\n'
-    output += f'    <div class="movie-year">{rating}/10</div>\n'
+    output += f'    <div class="movie-rating-stars" style="--rating:{rating}" title="{rating}/10"></div>\n'
     output += f"  </div>\n"
     output += f"</li>\n"
     return output
