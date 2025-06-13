@@ -62,6 +62,7 @@ def list_movies(user_id: int):
             "note": row[3],
             "poster_url": row[4],
             "imdb_id": row[5],
+            "country": row[6],
         }
         for row in movies
     }
@@ -91,6 +92,7 @@ def add_movie(
                     "note": "",
                     "poster_url": attributes["poster_url"],
                     "imdb_id": attributes["imdb_id"],
+                    "country": attributes["country"],
                 },
             )
             connection.commit()
