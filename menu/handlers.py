@@ -165,10 +165,18 @@ def handle_add_movie(_, movie_dict: dict[str, dict], ___) -> None:
                 f"❌ Invalid year value for movie '{new_movie_name}'.", COLOR_ERROR
             )
 
+        try:
+            imdb_id = data["imdbID"]
+        except (ValueError, TypeError):
+            return print_colored_output(
+                f"❌ Invalid imdbID value for movie '{new_movie_name}'.", COLOR_ERROR
+            )
+
         attributes = {
             "rating": rating,
             "year": year,
             "poster_url": data["Poster"],
+            "imdb_id": imdb_id,
         }
 
         movie_dict[new_movie_name] = attributes

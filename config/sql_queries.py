@@ -10,19 +10,20 @@ CREATE TABLE IF NOT EXISTS movies (
     year INTEGER NOT NULL,
     rating REAL NOT NULL, 
     note TEXT DEFAULT '',
-    poster_url TEXT NOT NULL
+    poster_url TEXT NOT NULL,
+    imdb_id TEXT NOT NULL
 )
 """
 
 SQL_SELECT_MOVIES_BY_USER_ID = """
-SELECT title, year, rating, note, poster_url 
+SELECT title, year, rating, note, poster_url, imdb_id
 FROM movies 
 WHERE user_id = :user_id
 """
 
 SQL_INSERT_MOVIE = """
-INSERT INTO movies (user_id, title, year, rating, note, poster_url) 
-VALUES (:user_id, :title, :year, :rating, :note, :poster_url)
+INSERT INTO movies (user_id, title, year, rating, note, poster_url, imdb_id) 
+VALUES (:user_id, :title, :year, :rating, :note, :poster_url, :imdb_id)
 """
 
 SQL_DELETE_MOVIE = """

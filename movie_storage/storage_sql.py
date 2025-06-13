@@ -56,7 +56,13 @@ def list_movies(user_id: int):
         movies = result.fetchall()
 
     return {
-        row[0]: {"year": row[1], "rating": row[2], "note": row[3], "poster_url": row[4]}
+        row[0]: {
+            "year": row[1],
+            "rating": row[2],
+            "note": row[3],
+            "poster_url": row[4],
+            "imdb_id": row[5],
+        }
         for row in movies
     }
 
@@ -84,6 +90,7 @@ def add_movie(
                     "rating": attributes["rating"],
                     "note": "",
                     "poster_url": attributes["poster_url"],
+                    "imdb_id": attributes["imdb_id"],
                 },
             )
             connection.commit()

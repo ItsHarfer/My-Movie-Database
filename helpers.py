@@ -380,11 +380,18 @@ def serialize_movie(movie_obj: dict) -> str:
     rating = movie_obj.get("rating", "Unknown")
     note = movie_obj.get("note", "")
     poster_url = movie_obj.get("poster_url", "Unknown")
-    return generate_movie_card(title, year, rating, note, poster_url)
+    imdb_id = movie_obj.get("imdb_id", "")
+    imdb_url = f"https://www.imdb.com/title/{imdb_id}"
+    return generate_movie_card(title, year, rating, note, poster_url, imdb_url)
 
 
 def generate_movie_card(
-    title: str, year: str | int, rating: str | float, note: str, poster_url: str
+    title: str,
+    year: str | int,
+    rating: str | float,
+    note: str,
+    poster_url: str,
+    imdb_url: str,
 ) -> str:
     """
     Generates an HTML list item representing a movie card.
@@ -396,13 +403,16 @@ def generate_movie_card(
     :param year: The release year of the movie.
     :param rating: The IMDb rating of the movie.
     :param poster_url: URL of the movie poster image.
+    :param imdb_url: URL to the movie's IMDb page.
     :return: HTML string for the movie card.
     """
     output = ""
     output += f"<li>\n"
     output += f'  <div class="movie">\n'
     output += f'    <div class="poster-wrapper" title="{note}">\n'
-    output += f'      <img class="movie-poster" src="{poster_url}" alt="{title}">\n'
+    output += f'      <a href="{imdb_url}" target="_blank">\n'
+    output += f'        <img class="movie-poster" src="{poster_url}" alt="{title}">\n'
+    output += f"      </a>\n"
     output += f"    </div>\n"
     output += f'    <div class="movie-title">{title}</div>\n'
     output += f'    <div class="movie-year">{year}</div>\n'
