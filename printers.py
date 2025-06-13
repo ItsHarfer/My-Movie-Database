@@ -117,11 +117,13 @@ def print_movie(title: str, movie: dict) -> None:
     """
     year = movie.get("year", "unknown")
     rating = movie.get("rating", "unrated")
+    note = movie.get("note", "")
     poster_url = movie.get("poster_url", "unknown")
 
     print_colored_output(f"- {title} ({year}): ", COLOR_TITLE, end="")
     print_colored_output(f"{rating} ", COLOR_VALUES, end="")
-    print_colored_output(f"Poster: {poster_url}", COLOR_SUCCESS)
+    print_colored_output(f"Poster: {poster_url}", COLOR_SUCCESS, end="")
+    print_colored_output(f" Note: {note}", COLOR_SUB_TITLE)
 
 
 def print_movies(movie_dict: dict[str, dict[str, float | int]]) -> None:

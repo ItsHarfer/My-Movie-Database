@@ -378,18 +378,20 @@ def serialize_movie(movie_obj: dict) -> str:
     title = movie_obj.get("title", "")
     year = movie_obj.get("year", "Unknown")
     rating = movie_obj.get("rating", "Unknown")
+    note = movie_obj.get("note", "")
     poster_url = movie_obj.get("poster_url", "Unknown")
-    return generate_movie_card(title, year, rating, poster_url)
+    return generate_movie_card(title, year, rating, note, poster_url)
 
 
 def generate_movie_card(
-    title: str, year: str | int, rating: str | float, poster_url: str
+    title: str, year: str | int, rating: str | float, note: str, poster_url: str
 ) -> str:
     """
     Generates an HTML list item representing a movie card.
 
     Formats the provided movie data into a styled HTML snippet.
 
+    :param note: Users preferred note about the movie.
     :param title: The title of the movie.
     :param year: The release year of the movie.
     :param rating: The IMDb rating of the movie.
@@ -399,7 +401,9 @@ def generate_movie_card(
     output = ""
     output += f"<li>\n"
     output += f'  <div class="movie">\n'
-    output += f'    <img class="movie-poster" src="{poster_url}\n">'
+    output += f'    <div class="poster-wrapper" title="{note}">\n'
+    output += f'      <img class="movie-poster" src="{poster_url}" alt="{title}">\n'
+    output += f"    </div>\n"
     output += f'    <div class="movie-title">{title}</div>\n'
     output += f'    <div class="movie-year">{year}</div>\n'
     output += f'    <div class="movie-year">{rating}/10</div>\n'

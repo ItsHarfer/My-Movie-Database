@@ -25,6 +25,7 @@ from config.sql_queries import (
     SQL_INSERT_MOVIE,
     SQL_DELETE_MOVIE,
     SQL_UPDATE_MOVIE_RATING,
+    SQL_UPDATE_MOVIE_NOTE,
 )
 from printers import print_colored_output
 from users.users import get_active_user
@@ -55,7 +56,7 @@ def list_movies(user_id: int):
         movies = result.fetchall()
 
     return {
-        row[0]: {"year": row[1], "rating": row[2], "poster_url": row[3]}
+        row[0]: {"year": row[1], "rating": row[2], "note": row[3], "poster_url": row[4]}
         for row in movies
     }
 
@@ -81,6 +82,7 @@ def add_movie(
                     "title": new_movie_title,
                     "year": attributes["year"],
                     "rating": attributes["rating"],
+                    "note": "",
                     "poster_url": attributes["poster_url"],
                 },
             )
@@ -116,20 +118,20 @@ def delete_movie(user_id, title):
             print_colored_output(f"❌ Error: {e}", COLOR_ERROR)
 
 
-def update_movie(user_id, title, rating):
+def update_movie(user_id, title, note):
     """
-    Updates the rating of an existing movie in the SQL database.
+    Updates the note of an existing movie in the SQL database.
 
-    :param user_id:
+    :param user_id: ID of the user who owns the movie.
     :param title: Title of the movie to update.
-    :param rating: New rating value to set.
+    :param note: New note to associate with the movie.
     :return: None. Prints a success or error message.
     """
     with engine.connect() as connection:
         try:
             username = get_active_user()
-            params = {"title": title, "rating": rating, "user_id": user_id}
-            connection.execute(text(SQL_UPDATE_MOVIE_RATING), params)
+            params = {"title": title, "note": note, "user_id": user_id}
+            connection.execute(text(SQL_UPDATE_MOVIE_NOTE), params)
             connection.commit()
             print_colored_output(
                 f"✅ Movie '{title}' successfully updated in {username}'s (uId:{user_id}) collection.",
