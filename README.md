@@ -35,31 +35,37 @@ A Python-based application for managing a movie database, accessible via both Co
 
 ```
 .
-├── main.py                    # CLI entry point
-├── analysis.py                # Rating calculations and statistics
-├── helpers.py                 # Input validation, filtering, visualizations
-├── printers.py                # Colored terminal output formatting
-├── requirements.txt           # External Python dependencies
-└── .env                       # API keys (excluded from version control)
+├── main.py                      # CLI entry point
+├── requirements.txt             # External dependencies
+├── analysis.py                  # Rating calculations and statistics
+├── printers.py                  # Colored terminal output formatting
+├── .env                         # Environment variables (excluded from VCS)
 ├── config/
-│   ├── config.py              # Configuration values and constants
-│   └── sql_queries.py         # SQL query strings
+│   ├── config.py                # Global configuration settings
+│   └── sql_queries.py           # SQL query strings
 ├── data/
-│   └── movies.db              # SQLite database
-├── menu/
-│   ├── dispatcher.py          # Movie menu dispatcher
-│   ├── handlers.py            # Movie-related command handlers
-│   └── menu.py                # CLI menu loop
-├── movie_storage/
-│   ├── data_io.py             # JSON-based legacy I/O
-│   ├── storage_json.py        # JSON storage backend
-│   └── storage_sql.py         # SQLAlchemy logic for storage backend
-├── users/
-│   ├── dispatcher.py          # User menu dispatcher
-│   ├── handler.py             # User creation and selection logic
-│   ├── menu.py                # User CLI menu loop
-│   ├── users.py               # Active user state management
-│   └── storage_sql.py         # User-specific SQL storage functions
+│   └── movies.db                # SQLite database (excluded from VCS)
+├── helpers/                     # Utility functions
+│   ├── dispatcher_utils.py      # Dispatcher helpers
+│   ├── file_utils.py            # File-related utilities
+│   ├── filter_utils.py          # Filtering logic
+│   ├── html_utils.py            # HTML generation helpers
+│   ├── input_utils.py           # Input parsing and validation
+│   ├── movie_utils.py           # Movie-specific helpers (e.g., country codes)
+│   ├── stats_utils.py           # Statistical calculation helpers
+│   └── system_utils.py          # System-level utilities
+├── movies/                      # Movie module
+│   ├── dispatcher.py            # Menu routing for movies
+│   ├── handler.py               # Logic for handling movie commands
+│   ├── menu.py                  # Menu interaction loop
+│   ├── storage_json.py          # JSON-based movie storage
+│   └── storage_sql.py           # SQL-based movie storage
+├── users/                       # User management
+│   ├── dispatcher.py            # Menu routing for users
+│   ├── handler.py               # User creation/selection logic
+│   ├── menu.py                  # User menu interaction loop
+│   ├── session_user.py          # Active user session state
+│   └── storage_sql.py           # SQL-based user data storage
 ```
 
 ---
@@ -112,10 +118,10 @@ Generate Web Interface:
 
 ## Example Operations
 
-- **👤 User Login/Create:** Select an existing user or create a new one to manage personal collections
+- **👤 User Login/Create/Switch:** Select an existing user, switch to another or create a new one to manage personal collections
 - **🎬 Add a Movie:** Automatically fetch rating, release year, and poster from OMDb API
 - **❌ Delete a Movie:** Remove a movie from the current user's collection by exact title
-- **📝 Update a Movie Rating:** Modify ratings with validation (1.0–10.0)
+- **📝 Update a Movie** With a personal note or mark it as your favourite movie.
 - **📋 View All Movies:** Show all movies stored for the current user
 - **🔍 Search Movies:** Find movies by partial match in title
 - **📊 Movie Statistics:** Display average, median, highest, and lowest-rated movies
@@ -124,6 +130,7 @@ Generate Web Interface:
 - **🎯 Filter Movies:** Filter by minimum rating and release year range
 - **📈 Create a Histogram:** Generate bar or scatter plots as `.png` images
 - **🌐 Static Web Interface:** Export all movies to a styled HTML webpage
+ 
 
 ---
 
