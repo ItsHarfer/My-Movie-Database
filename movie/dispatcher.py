@@ -1,10 +1,12 @@
 """
-dispatcher.py
+menu / dispatcher.py
 
-Centralized command dispatcher for the Movie Database application.
+Centralized command dispatcher for the Movie Database application (SQL edition).
 
 This module defines the mapping between numerical menu commands and their
-corresponding handler functions and descriptions.
+corresponding handler functions and descriptions. It acts as the main routing
+hub for all user-facing commands, both in the terminal-based interface and
+in functionality like HTML generation for favorite movies.
 
 The `MOVIE_COMMAND_DISPATCHER` dictionary enables the main menu loop to dynamically
 route user input to the appropriate functionality, providing a clean and extensible
@@ -26,15 +28,15 @@ Available Commands:
 7  - Search movie
 8  - Movies sorted by an attribute you choose
 9  - Create Rating Histogram
-10  - Show only movies matching your rating and year criteria
-11  - Generate website for your favorite movies
-12  - Switch user
+10 - Show only movies matching your rating and year criteria
+11 - Generate website for your favorite movies
+12 - Switch user
 
 Author: Martin Haferanke
-Date: 06.06.2025
+Date: 16.06.2025
 """
 
-from menu.handlers import (
+from movie.handler import (
     handle_quit_application,
     handle_show_movies,
     handle_add_movie,
@@ -74,7 +76,7 @@ MOVIE_COMMAND_DISPATCHER = {
     },
     4: {
         "handler": handle_update_movie,
-        "label": "Update movie",
+        "label": "Update a movie with new personal details",
         "args": None,
     },
     5: {

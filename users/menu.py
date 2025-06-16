@@ -16,7 +16,7 @@ Date: 13.06.2025
 """
 
 from config.config import COLOR_MENU_OPTIONS
-from helpers import get_input_by_type_and_range
+from helpers.input_utils import get_input_by_type_and_range
 from printers import print_title, print_colored_output
 from users import storage_sql
 from users.dispatcher import get_user_command_dispatcher

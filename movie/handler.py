@@ -1,32 +1,57 @@
 """
-handlers.py
+menu / handler.py
 
-This module defines handler functions for user interactions in the movie database application.
+This module defines the handler functions responsible for managing all user interactions
+in the SQL-based movie database application.
 
-It is used in conjunction with the MOVIE_COMMAND_DISPATCHER, which maps user-selected
-menu options to the corresponding handler logic.
+It works in conjunction with the MOVIE_COMMAND_DISPATCHER to map each menu option
+to its respective behavior. These handlers implement the core application logic
+such as movie management, statistics generation, data filtering, and external API interaction.
 
-Main features include:
-- Adding, deleting, and updating movie records
-- Listing all movies and showing individual or random entries
-- Searching and sorting movie data by user-selected attributes
-- Calculating and displaying statistics like average and median ratings
-- Generating visualizations such as rating histograms
-- Filtering movies based on rating and year range
-- Generating a website with movie data
-- Gracefully exiting the program
-- Using the OMDb API to fetch movie data
-- Managing user-specific movie storage and requiring an active user context
-- Loading API keys and endpoints from a .env file
+Main responsibilities include:
+- Adding, deleting, updating, and listing movie records
+- Displaying individual or random movies and their details
+- Searching and sorting movies by user-defined attributes
+- Computing and presenting statistical metrics (average, median, etc.)
+- Creating visual representations such as rating histograms
+- Filtering movie sets by rating and release year
+- Generating a dynamic HTML website for favorite movies
+- Managing movie notes and favorite flags per user
+- Interfacing with the OMDb API for movie data retrieval
+- Persisting user-specific movie data through SQL storage
+- Enforcing user context for all operations
+- Loading API configuration from a .env environment file
 
 Author: Martin Haferanke
-Date: 13.06.2025
+Date: 16.06.2025
 """
 
 import requests
 
-import movie_storage
-from movie_storage import storage_sql, data_io
+import movie
+from helpers.file_utils import load_data, save_data
+from helpers.filter_utils import (
+    find_movie,
+    filter_movies_by_search_query,
+    filter_movies_by_attributes,
+)
+from helpers.html_utils import (
+    replace_placeholder_with_html_content,
+    generate_movie_html_content,
+)
+from helpers.input_utils import (
+    get_colored_input,
+    get_content_validated_input,
+    get_input_by_type_and_range,
+    get_current_year,
+)
+from helpers.movie_utils import parse_fields, extract_valid_attributes
+from helpers.stats_utils import (
+    get_movies_sorted_by_attribute,
+    create_histogram_by_attribute,
+)
+from helpers.system_utils import quit_application
+from movie import storage_sql
 from analysis import (
     get_calculated_average_rate,
     get_calculated_median_rate,
@@ -45,22 +70,6 @@ from config.config import (
     HTML_OUTPUT_FILE,
     COLOR_TITLE,
 )
-from helpers import (
-    quit_application,
-    get_movies_sorted_by_attribute,
-    get_colored_input,
-    get_input_by_type_and_range,
-    find_movie,
-    filter_movies_by_search_query,
-    create_histogram_by_attribute,
-    get_current_year,
-    get_content_validated_input,
-    extract_valid_attributes,
-    filter_movies_by_attributes,
-    replace_placeholder_with_html_content,
-    generate_movie_html_content,
-    parse_fields,
-)
 
 from printers import (
     print_all_movies,
@@ -75,7 +84,7 @@ from printers import (
 from dotenv import load_dotenv
 import os
 
-from users.users import abort_if_no_active_user, get_active_user
+from users.session_user import abort_if_no_active_user, get_active_user
 
 # Initialize .env to get API Key and API_URL for secure access
 load_dotenv()
@@ -90,6 +99,7 @@ def handle_quit_application(_, __, ___):
 
     :param _: Unused parameter.
     :param __: Unused second parameter.
+    :param ___: Unused third parameter.
     :return: None. Prints the list of commands to the console.
     """
     quit_application()
@@ -109,7 +119,7 @@ def handle_show_movies(_, __, ___) -> None:
     """
     active_user_id = abort_if_no_active_user()
 
-    movies_for_user = movie_storage.storage_sql.list_movies(active_user_id)
+    movies_for_user = movie.storage_sql.list_movies(active_user_id)
     if not movies_for_user:
         return print_colored_output("❌ No movies available to show.", COLOR_ERROR)
 
@@ -124,18 +134,20 @@ def handle_add_movie(_, movie_dict: dict[str, dict], ___) -> None:
     Prompts the user to enter a movie title, retrieves data from the OMDb API,
     constructs the attribute dictionary, and updates both the in-memory and persistent storage.
 
-    :param _: Unused parameter (commonly required by handler interface).
+
+    :param _: Unused parameter.
     :param movie_dict: dict[str, dict] – Dictionary of movie titles and their attribute dictionaries.
+    :param ___: Unused parameter.
     :return: None. Prints success or error messages based on the outcome.
     """
     active_user_id = abort_if_no_active_user()
-
     new_movie_name = get_colored_input("Enter new movie name: ")
 
     if new_movie_name in movie_dict:
         return print_colored_output("❌ Movie already exists.", COLOR_ERROR)
 
     try:
+        # Make API request to OMDb API and parse response
         req = requests.get(f"{OMDB_API_URL}&apikey={OMDB_API_KEY}&t={new_movie_name}")
         if req.status_code != 200:
             return print_colored_output("❌ API request failed.", COLOR_ERROR)
@@ -159,11 +171,12 @@ def handle_add_movie(_, movie_dict: dict[str, dict], ___) -> None:
         except ValueError as e:
             return print_colored_output(f"❌ {e}", COLOR_ERROR)
 
+        # Construct attribute dictionary for movie
         rating = parsed_data["imdbRating"]
         year = parsed_data["Year"]
         imdb_id = parsed_data["imdbID"]
         country = parsed_data["Country"]
-        print(country)
+
         attributes = {
             "rating": rating,
             "year": year,
@@ -172,9 +185,15 @@ def handle_add_movie(_, movie_dict: dict[str, dict], ___) -> None:
             "country": country,
         }
 
-        movie_dict[new_movie_name] = attributes
+        # Add movie to persistent storage
+        storage_sql.add_movie(active_user_id, new_movie_name, attributes)
 
-        return storage_sql.add_movie(active_user_id, new_movie_name, attributes)
+        # Refresh movie_dict from DB
+        updated_movies = storage_sql.list_movies(active_user_id)
+        if new_movie_name in updated_movies:
+            movie_dict[new_movie_name] = updated_movies[new_movie_name]
+
+        return None
 
     except Exception as e:
         return print_colored_output(f"❌ Failed to add movie. Error: {e}", COLOR_ERROR)
@@ -193,7 +212,7 @@ def handle_delete_movie(_, movie_dict: dict[str, dict], ___) -> None:
     """
     active_user_id = abort_if_no_active_user()
 
-    user_movies = movie_storage.storage_sql.list_movies(active_user_id)
+    user_movies = movie.storage_sql.list_movies(active_user_id)
 
     if not user_movies:
         return print_colored_output("❌ No movies to delete.", COLOR_ERROR)
@@ -208,11 +227,11 @@ def handle_delete_movie(_, movie_dict: dict[str, dict], ___) -> None:
         )
 
     try:
-        # Remove from in-memory dictionary if present
-        movie_dict.pop(movie_to_delete, None)
-
         # Remove from persistent storage
-        movie_storage.storage_sql.delete_movie(active_user_id, movie_to_delete)
+        movie.storage_sql.delete_movie(active_user_id, movie_to_delete)
+
+        # Remove from in-memory dictionary
+        movie_dict.pop(movie_to_delete, None)
 
         return print_colored_output(
             f"✅ Movie '{movie_to_delete}' successfully deleted.", COLOR_SUCCESS
@@ -248,15 +267,23 @@ def handle_update_movie(_, movie_dict: dict[str, dict], ___) -> None:
             )
 
         new_note = get_colored_input("Enter movie note: ", COLOR_TITLE)
+        new_favourite = get_content_validated_input(
+            "Is this one of your favourite movie? (Yes or No): ", {"Yes", "No"}
+        )
+        is_favourite = new_favourite == "Yes"
 
-        # Update note in memory
-        movie_dict[movie_name]["note"] = new_note
+        # Update note and favourite movie in persistent storage
+        movie.storage_sql.update_movie(
+            active_user_id, movie_name, new_note, int(is_favourite)
+        )
 
-        # Update rating in persistent storage
-        movie_storage.storage_sql.update_movie(active_user_id, movie_name, new_note)
+        # Refresh movie_dict from DB
+        updated_movies = storage_sql.list_movies(active_user_id)
+        if updated_movies and movie_name in updated_movies:
+            movie_dict[movie_name] = updated_movies[movie_name]
 
         return print_colored_output(
-            f"✅ Movie '{movie_name}' personal note updated to '{new_note}'.",
+            f"✅ Movie '{movie_name}' personal note and favourite updated to '{new_note}'.",
             COLOR_SUCCESS,
         )
 
@@ -480,7 +507,7 @@ def handle_generate_website(_, movie_dict: dict[str, dict], ___) -> None:
     username = get_active_user()
 
     # Load the HTML template from file
-    html_template = data_io.load_data(HTML_TEMPLATE_FILE)
+    html_template = load_data(HTML_TEMPLATE_FILE)
 
     # Replace the title placeholder with the new content
     html_template = replace_placeholder_with_html_content(
@@ -494,4 +521,4 @@ def handle_generate_website(_, movie_dict: dict[str, dict], ___) -> None:
         html_template, PLACEHOLDER_MOVIE_GRID, movie_card_html
     )
     # Save the new html content to an index.html file
-    data_io.save_data(HTML_OUTPUT_FILE, html_template)
+    save_data(HTML_OUTPUT_FILE, html_template)

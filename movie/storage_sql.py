@@ -24,11 +24,10 @@ from config.sql_queries import (
     SQL_SELECT_MOVIES_BY_USER_ID,
     SQL_INSERT_MOVIE,
     SQL_DELETE_MOVIE,
-    SQL_UPDATE_MOVIE_RATING,
-    SQL_UPDATE_MOVIE_NOTE,
+    SQL_UPDATE_MOVIE,
 )
 from printers import print_colored_output
-from users.users import get_active_user
+from users.session_user import get_active_user
 
 # Define the database URL
 DB_URL = "sqlite:///data/movies.db"
@@ -63,6 +62,7 @@ def list_movies(user_id: int):
             "poster_url": row[4],
             "imdb_id": row[5],
             "country": row[6],
+            "is_favorite": bool(row[7]),
         }
         for row in movies
     }
@@ -93,6 +93,7 @@ def add_movie(
                     "poster_url": attributes["poster_url"],
                     "imdb_id": attributes["imdb_id"],
                     "country": attributes["country"],
+                    "is_favorite": False,
                 },
             )
             connection.commit()
@@ -127,20 +128,27 @@ def delete_movie(user_id, title):
             print_colored_output(f"❌ Error: {e}", COLOR_ERROR)
 
 
-def update_movie(user_id, title, note):
+def update_movie(user_id, title, note, is_favorite):
     """
     Updates the note of an existing movie in the SQL database.
+
 
     :param user_id: ID of the user who owns the movie.
     :param title: Title of the movie to update.
     :param note: New note to associate with the movie.
+    :param is_favorite: Boolean is indicating whether the movie is a favorite.
     :return: None. Prints a success or error message.
     """
     with engine.connect() as connection:
         try:
             username = get_active_user()
-            params = {"title": title, "note": note, "user_id": user_id}
-            connection.execute(text(SQL_UPDATE_MOVIE_NOTE), params)
+            params = {
+                "title": title,
+                "note": note,
+                "user_id": user_id,
+                "is_favorite": is_favorite,
+            }
+            connection.execute(text(SQL_UPDATE_MOVIE), params)
             connection.commit()
             print_colored_output(
                 f"✅ Movie '{title}' successfully updated in {username}'s (uId:{user_id}) collection.",

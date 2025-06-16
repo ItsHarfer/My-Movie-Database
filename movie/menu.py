@@ -23,11 +23,12 @@ from config.config import (
     COLOR_MENU_OPTIONS,
     COLOR_SUCCESS,
 )
-from menu.dispatcher import MOVIE_COMMAND_DISPATCHER
-from helpers import get_input_by_type_and_range, get_colored_input, execute_operation
+from helpers.dispatcher import execute_operation
+from helpers.input_utils import get_input_by_type_and_range, get_colored_input
+from movie.dispatcher import MOVIE_COMMAND_DISPATCHER
 from printers import print_title, print_colored_output
-from users import users
-from users.users import get_active_user_id
+from users import session_user
+from users.session_user import get_active_user_id
 
 
 def show_movie_menu_options() -> None:
@@ -61,7 +62,7 @@ def run_movie_menu_loop(movie_dict: dict[str, dict[str, float | int]]) -> None:
     while True:
         print()
         print_colored_output(
-            f"🎬 Hey {users.get_active_user()}, welcome back!\n", COLOR_SUCCESS
+            f"🎬 Hey {session_user.get_active_user()}, welcome back!\n", COLOR_SUCCESS
         )
         show_movie_menu_options()
         user_choice = int(

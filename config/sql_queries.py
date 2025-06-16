@@ -6,25 +6,27 @@ SQL_CREATE_MOVIES_TABLE = """
 CREATE TABLE IF NOT EXISTS movies (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
-    title TEXT UNIQUE NOT NULL,
+    title TEXT NOT NULL,
     year INTEGER NOT NULL,
     rating REAL NOT NULL, 
     note TEXT DEFAULT '',
     poster_url TEXT NOT NULL,
     imdb_id TEXT NOT NULL,
-    country TEXT NOT NULL 
+    country TEXT NOT NULL,
+    is_favorite INTEGER DEFAULT 0,
+    UNIQUE(user_id, title)
 )
 """
 
 SQL_SELECT_MOVIES_BY_USER_ID = """
-SELECT title, year, rating, note, poster_url, imdb_id, country
+SELECT title, year, rating, note, poster_url, imdb_id, country, is_favorite
 FROM movies 
 WHERE user_id = :user_id
 """
 
 SQL_INSERT_MOVIE = """
-INSERT INTO movies (user_id, title, year, rating, note, poster_url, imdb_id, country) 
-VALUES (:user_id, :title, :year, :rating, :note, :poster_url, :imdb_id, :country)
+INSERT INTO movies (user_id, title, year, rating, note, poster_url, imdb_id, country, is_favorite) 
+VALUES (:user_id, :title, :year, :rating, :note, :poster_url, :imdb_id, :country, :is_favorite)
 """
 
 SQL_DELETE_MOVIE = """
@@ -32,15 +34,9 @@ DELETE FROM movies
 WHERE title = :title AND user_id = :user_id
 """
 
-SQL_UPDATE_MOVIE_RATING = """
+SQL_UPDATE_MOVIE = """
 UPDATE movies 
-SET rating = :rating 
-WHERE title = :title AND user_id = :user_id
-"""
-
-SQL_UPDATE_MOVIE_NOTE = """
-UPDATE movies 
-SET note = :note 
+SET note = :note, is_favorite = :is_favorite
 WHERE title = :title AND user_id = :user_id
 """
 

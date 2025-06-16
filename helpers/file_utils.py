@@ -1,5 +1,5 @@
 """
-file_io.py
+helpers / file_utils.py
 
 Utility module for reading and writing data to files in plain text or JSON format.
 
@@ -43,7 +43,7 @@ def save_data(file_path: str, html: str, is_json: bool = False) -> None:
     :return: None
     """
     try:
-        with open(file_path, "w") as file:
+        with open(file_path, "w", encoding="utf-8") as file:
             file.write(json.dumps(html)) if is_json else file.write(html)
             return print("HTML saved successfully.")
     except (IOError, FileNotFoundError, json.JSONDecodeError) as e:

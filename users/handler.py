@@ -1,7 +1,28 @@
+"""
+user / handler.py
+
+Defines CLI handlers for managing users via the SQL-based user storage system.
+
+This module provides functions to create, list, select, and switch users within the
+application. It integrates with the session and storage layers to manage user state
+and persistence.
+
+Functions:
+- handle_list_users: Displays all registered users from the SQL database.
+- handle_select_user: Sets a specific user as the active session user.
+- handle_create_user: Prompts for a username and creates a new user in the database.
+- handle_switch_user: Clears the current active user session.
+
+These handlers are intended for use with a command dispatcher in a menu-driven interface.
+
+Author: Martin Haferanke
+Date: 16.06.2025
+"""
+
 from config.config import COLOR_MENU_OPTIONS, COLOR_SUCCESS
 from printers import print_colored_output
 from users import storage_sql
-from users.users import set_active_user, clear_active_user
+from users.session_user import set_active_user, clear_active_user
 
 
 def handle_list_users(_: None, __: None, ___: None) -> None:

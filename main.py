@@ -1,38 +1,39 @@
 """
 main.py
 
-Main entry point of the Movie Database application (SQL/HMTL/API Edition).
+Main entry point of the Movie Database application (SQL/HTML/API Edition).
 
 This script launches an interactive command-line interface that allows users to
-manage a collection of movies using an SQL-backed storage system. Users can view,
-add, update, and delete movies, analyze data, and manage multiple user profiles.
+manage a personal collection of movies using an SQL-backed storage system.
+Users can view, add, update, delete, and analyze movies, manage multiple profiles,
+and export favorite movies as an HTML website.
 
 Features:
-- User management and login using `users.menu` and `users.users`
-- Menu-driven interface using `run_menu_loop` from `menu.menu`
-- Loads and modifies movie data via `movie_storage.storage_sql`
-- Supports rich interaction through helper and handler modules
-- Displays statistics on movie ratings, release years, and trends
-- Integrates HTML generation for website previews of the movie database
+- User management and session handling via `users.menu` and `users.session_user`
+- Menu-driven interface using `run_movie_menu_loop` from `movie.menu`
+- SQL-backed movie storage with `movie.storage_sql`
+- Rich interactions supported by helper modules (`helpers.*`, `printers`, `analysis`)
+- Filter, sort, and analyze movies with visualization and data exploration
+- Generate HTML previews for personal movie collections
 
 Required modules:
-- movie_storage.storage_sql: Handles SQL database interactions
-- users.menu, users.users: User selection and active user state
-- menu.menu, menu.dispatcher: Menu definitions and logic
-- printers: Console output formatting
-- menu.handlers, helpers: Input handling, filtering, validation, and HTML rendering
-- analysis: Visualization and analysis tools
+- movie.storage_sql: Handles all movie-related SQL database operations
+- users.menu, users.session_user: User menu navigation and session control
+- movie.menu: Main movie interaction menu
+- printers: Formatted CLI output
+- helpers.*: Input validation, HTML generation, filtering utilities
+- analysis: Statistical analysis and matplotlib-based visualization
 
 Author: Martin Haferanke
-Date: 13.06.2025
+Date: 16.06.2025
 """
 
-from menu.menu import run_movie_menu_loop
-from movie_storage import storage_sql
+from movie.menu import run_movie_menu_loop
+from movie import storage_sql
 
 from printers import print_title
 from users.menu import run_user_menu_loop
-from users.users import get_active_user_id
+from users.session_user import get_active_user_id
 
 active_user = None
 
