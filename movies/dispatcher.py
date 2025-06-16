@@ -1,5 +1,5 @@
 """
-menu / dispatcher.py
+menu / dispatcher_utils.py
 
 Centralized command dispatcher for the Movie Database application (SQL edition).
 

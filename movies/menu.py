@@ -23,7 +23,7 @@ from config.config import (
     COLOR_MENU_OPTIONS,
     COLOR_SUCCESS,
 )
-from helpers.dispatcher import execute_operation
+from helpers.dispatcher_utils import execute_operation
 from helpers.input_utils import get_input_by_type_and_range, get_colored_input
 from movies.dispatcher import MOVIE_COMMAND_DISPATCHER
 from printers import print_title, print_colored_output
