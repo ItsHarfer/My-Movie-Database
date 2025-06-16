@@ -60,12 +60,10 @@ def generate_movie_html_content(movie_data: dict[str, dict]) -> str:
     :return: HTML string containing the formatted movies cards.
     """
     output = ""
-    output += '<ol class="movies-grid">'
     for title, details in movie_data.items():
         movie_dict = details.copy()
         movie_dict["title"] = title
         output += serialize_movie(movie_dict)
-    output += "</ol>"
     return output
 
 
@@ -127,23 +125,23 @@ def generate_movie_card(
 
     output = ""
     output += f"<li>\n"
-    output += f'  <div class="movies">\n'
+    output += f'  <div class="movie">\n'
     output += f'    <div class="{poster_wrapper_classes}" title="{note}">\n'
     if is_favorite:
         output += f'      <span class="favorite-icon">&#x1F451;</span>\n'
     output += f'      <a href="{imdb_url}" target="_blank">\n'
-    output += f'        <img class="movies-poster" src="{poster_url}" alt="{title}">\n'
+    output += f'        <img class="movie-poster" src="{poster_url}" alt="{title}">\n'
     output += f"      </a>\n"
     output += f"    </div>\n"
-    output += f'    <div class="movies-title">{title}</div>\n'
+    output += f'    <div class="movie-title">{title}</div>\n'
     for code in country_codes:
         output += f"""    <img 
-                            class="movies-flag" 
+                            class="movie-flag" 
                             src="https://flagcdn.com/16x12/{code.lower()}.png" 
                             srcset="https://flagcdn.com/32x24/{code.lower()}.png 2x, https://flagcdn.com/48x36/{code.lower()}.png 3x"
                             width="16" height="12" alt="{code.upper()}">\n"""
-    output += f'    <div class="movies-year">{year}</div>\n'
-    output += f'    <div class="movies-rating-stars" style="--rating:{rating}" title="{rating}/10"></div>\n'
+    output += f'    <div class="movie-year">{year}</div>\n'
+    output += f'    <div class="movie-rating-stars" style="--rating:{rating}" title="{rating}/10"></div>\n'
     output += f"  </div>\n"
     output += f"</li>\n"
     return output
