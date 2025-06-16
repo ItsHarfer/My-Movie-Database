@@ -1,15 +1,15 @@
 """
 storage_json.py
 
-This module handles low-level JSON-based storage operations for the movie database application.
+This module handles low-level JSON-based storage operations for the movies database application.
 
 It provides functions to:
-- Load and save movie data to/from a JSON file
-- Perform CRUD operations (create, read, update, delete) on individual movie entries
+- Load and save movies data to/from a JSON file
+- Perform CRUD operations (create, read, update, delete) on individual movies entries
 - Validate basic data integrity and catch I/O or format-related errors
 - Output meaningful user feedback for failed operations
 
-All data is stored in a dictionary format, with movie titles as keys and
+All data is stored in a dictionary format, with movies titles as keys and
 attribute dictionaries (e.g. rating, year) as values.
 
 Author: Martin Haferanke
@@ -24,7 +24,7 @@ from printers import print_colored_output
 
 def get_movie_list(filename: str) -> dict[str, dict[str, float | int]]:
     """
-    Loads and returns structured movie (or ship) data from a JSON file.
+    Loads and returns structured movies (or ship) data from a JSON file.
 
     Expects the file to contain a dictionary of string keys mapping to dictionaries
     with numeric attributes like ratings or release years.
@@ -49,7 +49,7 @@ def get_movie_list(filename: str) -> dict[str, dict[str, float | int]]:
 
 def save_movies(movie_dict: dict[str, dict[str, float | int]], filename: str) -> None:
     """
-    Saves the given movie dictionary to a JSON file.
+    Saves the given movies dictionary to a JSON file.
 
     Attempts to write the provided dictionary to the specified filename.
     If an I/O error occurs, it prints an error message and returns False.
@@ -67,13 +67,13 @@ def save_movies(movie_dict: dict[str, dict[str, float | int]], filename: str) ->
 
 def add_movie(title: str, attributes: dict[str, float | int]) -> None:
     """
-    Adds a new movie with its attributes to the movie database.
+    Adds a new movies with its attributes to the movies database.
 
-    Loads the existing movie data from the JSON file, adds the new movie
+    Loads the existing movies data from the JSON file, adds the new movies
     if it doesn't already exist, and saves the updated data back to the file.
     Provides colored console output to indicate success or duplication.
 
-    :param title: The title of the movie to be added.
+    :param title: The title of the movies to be added.
     :param attributes: Dictionary of numeric attributes (e.g. {"rating": 8.5, "release": 1994}).
     :return: None
     """
@@ -84,13 +84,13 @@ def add_movie(title: str, attributes: dict[str, float | int]) -> None:
 
 def delete_movie(title: str) -> None:
     """
-    Deletes a movie from the movie database.
+    Deletes a movies from the movies database.
 
-    Loads the existing movie data from the JSON file, removes the specified movie
-    if it exists, and saves the updated data. If the movie is not found,
+    Loads the existing movies data from the JSON file, removes the specified movies
+    if it exists, and saves the updated data. If the movies is not found,
     an error message is printed.
 
-    :param title: The title of the movie to be deleted.
+    :param title: The title of the movies to be deleted.
     :return: None
     """
     movies = get_movie_list(DATA_FILE)
@@ -98,7 +98,7 @@ def delete_movie(title: str) -> None:
         del movies[title]
     except KeyError as error:
         return print_colored_output(
-            f"❌ Cant delete movie. Error: {error}", COLOR_ERROR
+            f"❌ Cant delete movies. Error: {error}", COLOR_ERROR
         )
 
     return save_movies(movies, DATA_FILE)
@@ -106,12 +106,12 @@ def delete_movie(title: str) -> None:
 
 def update_movie(title: str, attribute: str, new_value: float | int) -> None:
     """
-    Updates a specific attribute of a movie in the movies database.
+    Updates a specific attribute of a movies in the movies database.
 
-    Loads the existing movie data from the JSON file, updates the specified
-    attribute of the given movie, and saves the updated data back to the file.
+    Loads the existing movies data from the JSON file, updates the specified
+    attribute of the given movies, and saves the updated data back to the file.
 
-    :param title: The title of the movie to update.
+    :param title: The title of the movies to update.
     :param attribute: The name of the attribute to update (e.g., "rating").
     :param new_value: The new value to assign to the attribute.
     :return: None
@@ -121,6 +121,6 @@ def update_movie(title: str, attribute: str, new_value: float | int) -> None:
         movies[title][attribute] = new_value
     except KeyError as error:
         return print_colored_output(
-            f"❌ Cant update movie. Error: {error}", COLOR_ERROR
+            f"❌ Cant update movies. Error: {error}", COLOR_ERROR
         )
     return save_movies(movies, DATA_FILE)

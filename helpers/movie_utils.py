@@ -1,17 +1,17 @@
 """
 helpers / movie_utils.py
 
-Provides utility functions for extracting, parsing, and validating movie-related data structures.
+Provides utility functions for extracting, parsing, and validating movies-related data structures.
 
-This module supports attribute extraction from movie dictionaries, country name conversion to ISO codes,
+This module supports attribute extraction from movies dictionaries, country name conversion to ISO codes,
 and parsing of structured field data for validation and transformation purposes.
 
 Functions:
 - extract_country_codes: Converts comma-separated country names into ISO alpha-2 codes.
-- extract_valid_attributes: Retrieves attribute names from the first valid movie dictionary entry.
+- extract_valid_attributes: Retrieves attribute names from the first valid movies dictionary entry.
 - parse_fields: Extracts and casts specific fields from a data dictionary with type validation.
 
-These helpers are commonly used to sanitize and prepare movie data for display, storage, or API consumption.
+These helpers are commonly used to sanitize and prepare movies data for display, storage, or API consumption.
 
 Author: Martin Haferanke
 Date: 16.06.2025
@@ -37,11 +37,11 @@ def extract_country_codes(country_string: str) -> list[str]:
 
 def extract_valid_attributes(movie_dict: dict[str, dict]) -> set[str]:
     """
-    Extracts a set of valid attribute names from the first movie entry in the dictionary.
+    Extracts a set of valid attribute names from the first movies entry in the dictionary.
 
     Returns an empty set if the dictionary is empty or invalid.
 
-    :param movie_dict: Dictionary of movie titles and their attributes.
+    :param movie_dict: Dictionary of movies titles and their attributes.
     :return: Set of attribute names.
     """
     if not movie_dict:

@@ -2,23 +2,23 @@
 menu / handler.py
 
 This module defines the handler functions responsible for managing all user interactions
-in the SQL-based movie database application.
+in the SQL-based movies database application.
 
 It works in conjunction with the MOVIE_COMMAND_DISPATCHER to map each menu option
 to its respective behavior. These handlers implement the core application logic
-such as movie management, statistics generation, data filtering, and external API interaction.
+such as movies management, statistics generation, data filtering, and external API interaction.
 
 Main responsibilities include:
-- Adding, deleting, updating, and listing movie records
+- Adding, deleting, updating, and listing movies records
 - Displaying individual or random movies and their details
 - Searching and sorting movies by user-defined attributes
 - Computing and presenting statistical metrics (average, median, etc.)
 - Creating visual representations such as rating histograms
-- Filtering movie sets by rating and release year
+- Filtering movies sets by rating and release year
 - Generating a dynamic HTML website for favorite movies
-- Managing movie notes and favorite flags per user
-- Interfacing with the OMDb API for movie data retrieval
-- Persisting user-specific movie data through SQL storage
+- Managing movies notes and favorite flags per user
+- Interfacing with the OMDb API for movies data retrieval
+- Persisting user-specific movies data through SQL storage
 - Enforcing user context for all operations
 - Loading API configuration from a .env environment file
 
@@ -28,7 +28,7 @@ Date: 16.06.2025
 
 import requests
 
-import movie
+import movies
 from helpers.file_utils import load_data, save_data
 from helpers.filter_utils import (
     find_movie,
@@ -51,7 +51,7 @@ from helpers.stats_utils import (
     create_histogram_by_attribute,
 )
 from helpers.system_utils import quit_application
-from movie import storage_sql
+from movies import storage_sql
 from analysis import (
     get_calculated_average_rate,
     get_calculated_median_rate,
@@ -119,7 +119,7 @@ def handle_show_movies(_, __, ___) -> None:
     """
     active_user_id = abort_if_no_active_user()
 
-    movies_for_user = movie.storage_sql.list_movies(active_user_id)
+    movies_for_user = movies.storage_sql.list_movies(active_user_id)
     if not movies_for_user:
         return print_colored_output("❌ No movies available to show.", COLOR_ERROR)
 
@@ -129,19 +129,19 @@ def handle_show_movies(_, __, ___) -> None:
 
 def handle_add_movie(_, movie_dict: dict[str, dict], ___) -> None:
     """
-    Handles user input to add a new movie to the database, including its name, rating, and release year.
+    Handles user input to add a new movies to the database, including its name, rating, and release year.
 
-    Prompts the user to enter a movie title, retrieves data from the OMDb API,
+    Prompts the user to enter a movies title, retrieves data from the OMDb API,
     constructs the attribute dictionary, and updates both the in-memory and persistent storage.
 
 
     :param _: Unused parameter.
-    :param movie_dict: dict[str, dict] – Dictionary of movie titles and their attribute dictionaries.
+    :param movie_dict: dict[str, dict] – Dictionary of movies titles and their attribute dictionaries.
     :param ___: Unused parameter.
     :return: None. Prints success or error messages based on the outcome.
     """
     active_user_id = abort_if_no_active_user()
-    new_movie_name = get_colored_input("Enter new movie name: ")
+    new_movie_name = get_colored_input("Enter new movies name: ")
 
     if new_movie_name in movie_dict:
         return print_colored_output("❌ Movie already exists.", COLOR_ERROR)
@@ -171,7 +171,7 @@ def handle_add_movie(_, movie_dict: dict[str, dict], ___) -> None:
         except ValueError as e:
             return print_colored_output(f"❌ {e}", COLOR_ERROR)
 
-        # Construct attribute dictionary for movie
+        # Construct attribute dictionary for movies
         rating = parsed_data["imdbRating"]
         year = parsed_data["Year"]
         imdb_id = parsed_data["imdbID"]
@@ -185,7 +185,7 @@ def handle_add_movie(_, movie_dict: dict[str, dict], ___) -> None:
             "country": country,
         }
 
-        # Add movie to persistent storage
+        # Add movies to persistent storage
         storage_sql.add_movie(active_user_id, new_movie_name, attributes)
 
         # Refresh movie_dict from DB
@@ -196,29 +196,29 @@ def handle_add_movie(_, movie_dict: dict[str, dict], ___) -> None:
         return None
 
     except Exception as e:
-        return print_colored_output(f"❌ Failed to add movie. Error: {e}", COLOR_ERROR)
+        return print_colored_output(f"❌ Failed to add movies. Error: {e}", COLOR_ERROR)
 
 
 def handle_delete_movie(_, movie_dict: dict[str, dict], ___) -> None:
     """
-    Handles user input to delete a movie from the database.
+    Handles user input to delete a movies from the database.
 
-    Prompts the user to enter a movie title. If the movie exists in the database,
+    Prompts the user to enter a movies title. If the movies exists in the database,
     it will be removed from both the in-memory dictionary and persistent storage.
 
     :param _: Unused parameter (commonly required by handler interface).
-    :param movie_dict: dict[str, dict] – Dictionary of movie titles and their attribute dictionaries.
+    :param movie_dict: dict[str, dict] – Dictionary of movies titles and their attribute dictionaries.
     :return: None. Prints confirmation or error message depending on outcome.
     """
     active_user_id = abort_if_no_active_user()
 
-    user_movies = movie.storage_sql.list_movies(active_user_id)
+    user_movies = movies.storage_sql.list_movies(active_user_id)
 
     if not user_movies:
         return print_colored_output("❌ No movies to delete.", COLOR_ERROR)
 
     movie_to_delete = get_colored_input(
-        "Enter the name of the movie you want to delete: "
+        "Enter the name of the movies you want to delete: "
     )
 
     if movie_to_delete not in user_movies:
@@ -228,7 +228,7 @@ def handle_delete_movie(_, movie_dict: dict[str, dict], ___) -> None:
 
     try:
         # Remove from persistent storage
-        movie.storage_sql.delete_movie(active_user_id, movie_to_delete)
+        movies.storage_sql.delete_movie(active_user_id, movie_to_delete)
 
         # Remove from in-memory dictionary
         movie_dict.pop(movie_to_delete, None)
@@ -239,16 +239,16 @@ def handle_delete_movie(_, movie_dict: dict[str, dict], ___) -> None:
 
     except Exception as e:
         return print_colored_output(
-            f"❌ Error deleting movie '{movie_to_delete}': {e}", COLOR_ERROR
+            f"❌ Error deleting movies '{movie_to_delete}': {e}", COLOR_ERROR
         )
 
 
 def handle_update_movie(_, movie_dict: dict[str, dict], ___) -> None:
     """
-    Handles user input to update the rating of a specific movie in the database.
+    Handles user input to update the rating of a specific movies in the database.
 
     :param _: Unused parameter (commonly required by menu handlers).
-    :param movie_dict: Dictionary of movie titles and their attribute dictionaries.
+    :param movie_dict: Dictionary of movies titles and their attribute dictionaries.
     :return: None
     """
     active_user_id = abort_if_no_active_user()
@@ -266,14 +266,14 @@ def handle_update_movie(_, movie_dict: dict[str, dict], ___) -> None:
                 f"❌ Movie '{movie_name}' not found for the active user.", COLOR_ERROR
             )
 
-        new_note = get_colored_input("Enter movie note: ", COLOR_TITLE)
+        new_note = get_colored_input("Enter movies note: ", COLOR_TITLE)
         new_favourite = get_content_validated_input(
-            "Is this one of your favourite movie? (Yes or No): ", {"Yes", "No"}
+            "Is this one of your favourite movies? (Yes or No): ", {"Yes", "No"}
         )
         is_favourite = new_favourite == "Yes"
 
-        # Update note and favourite movie in persistent storage
-        movie.storage_sql.update_movie(
+        # Update note and favourite movies in persistent storage
+        movies.storage_sql.update_movie(
             active_user_id, movie_name, new_note, int(is_favourite)
         )
 
@@ -288,23 +288,23 @@ def handle_update_movie(_, movie_dict: dict[str, dict], ___) -> None:
         )
 
     except Exception as e:
-        return print_colored_output(f"❌ Error updating movie rating: {e}", COLOR_ERROR)
+        return print_colored_output(f"❌ Error updating movies rating: {e}", COLOR_ERROR)
 
 
 def handle_show_movie_statistics(_, movie_dict: dict[str, dict], ___) -> None:
     """
-    Handles the process of calculating and displaying movie statistics,
+    Handles the process of calculating and displaying movies statistics,
     including average rating, median rating, best and worst movies.
 
     :param _: Unused parameter (commonly required by menu handlers).
-    :param movie_dict: Dictionary of movie titles and their attribute dictionaries (e.g. rating, release).
+    :param movie_dict: Dictionary of movies titles and their attribute dictionaries (e.g. rating, release).
     :return: None
     """
     abort_if_no_active_user()
 
     if not movie_dict:
         return print_colored_output(
-            f"❌ No movies in database. Try to add a movie.", COLOR_ERROR
+            f"❌ No movies in database. Try to add a movies.", COLOR_ERROR
         )
 
     average_rate = get_calculated_average_rate(movie_dict)
@@ -318,10 +318,10 @@ def handle_show_movie_statistics(_, movie_dict: dict[str, dict], ___) -> None:
 
 def handle_random_movie(_, movie_dict: dict[str, dict], ___) -> None:
     """
-    Selects a random movie from the database and displays its details.
+    Selects a random movies from the database and displays its details.
 
     :param _: Unused parameter (commonly required by menu handlers).
-    :param movie_dict: Dictionary of movie titles and their attribute dictionaries.
+    :param movie_dict: Dictionary of movies titles and their attribute dictionaries.
     :return: None
     """
 
@@ -331,7 +331,7 @@ def handle_random_movie(_, movie_dict: dict[str, dict], ___) -> None:
         return print_colored_output(
             "❌ No movies available to print random one.", COLOR_ERROR
         )
-    print_title("Random movie")
+    print_title("Random movies")
     random_movie = get_random_movie(movie_dict)
     title = list(random_movie.keys())[0]
     details = random_movie[title]
@@ -343,7 +343,7 @@ def handle_search_movie(_, movie_dict: dict[str, dict], ___) -> None:
     Handles the search functionality for finding movies by name.
 
     :param _: Unused parameter (commonly required by menu handlers).
-    :param movie_dict: Dictionary of movie titles and their attribute dictionaries.
+    :param movie_dict: Dictionary of movies titles and their attribute dictionaries.
     :return: None
     """
 
@@ -352,7 +352,7 @@ def handle_search_movie(_, movie_dict: dict[str, dict], ___) -> None:
     if not movie_dict:
         return print_colored_output("❌ No movies to search for.", COLOR_ERROR)
 
-    search_query = get_colored_input("Enter part of movie name:").lower()
+    search_query = get_colored_input("Enter part of movies name:").lower()
     matches = filter_movies_by_search_query(movie_dict, search_query)
     print_title("Search results")
     return print_search_results(matches)
@@ -367,7 +367,7 @@ def handle_sorted_movies_by_attribute(_, movie_dict: dict[str, dict], ___) -> No
     Displays the sorted list of movies including their attributes.
 
     :param _: Unused parameter
-    :param movie_dict: Dictionary of movie titles and their attribute dictionaries.
+    :param movie_dict: Dictionary of movies titles and their attribute dictionaries.
     :return: None
     """
     abort_if_no_active_user()
@@ -408,7 +408,7 @@ def handle_create_histogram_by_attribute(_, movie_dict: dict[str, dict], ___) ->
     then generates and saves the corresponding histogram. Repeats if the attribute is invalid.
 
     :param _: Unused parameter.
-    :param movie_dict: Dictionary of movie titles and their attribute dictionaries.
+    :param movie_dict: Dictionary of movies titles and their attribute dictionaries.
     :return: None
     """
     abort_if_no_active_user()
@@ -441,10 +441,10 @@ def handle_filter_movies(_, movie_dict: dict[str, dict], ___) -> None:
     Handles user input to filter movies by rating and release year range.
 
     Prompts the user for minimum rating, start year, and end year. If no input is provided,
-    default values are used. The filtered movie list is then displayed based on these criteria.
+    default values are used. The filtered movies list is then displayed based on these criteria.
 
     :param _: Unused parameter (required by handler interface).
-    :param movie_dict: Dictionary of movie titles and their attribute dictionaries.
+    :param movie_dict: Dictionary of movies titles and their attribute dictionaries.
     :return: None
     """
 
@@ -495,10 +495,10 @@ def handle_generate_website(_, movie_dict: dict[str, dict], ___) -> None:
     Generates a website displaying the current list of movies.
 
     Loads an HTML template, replaces predefined placeholders with actual content
-    such as a custom title and generated movie cards, and saves the final HTML output.
+    such as a custom title and generated movies cards, and saves the final HTML output.
 
     :param _: Unused parameter (required by handler interface)
-    :param movie_dict: dict[str, dict] – Dictionary of movie titles and their attribute dictionaries
+    :param movie_dict: dict[str, dict] – Dictionary of movies titles and their attribute dictionaries
     :return: None
     """
 
@@ -516,7 +516,7 @@ def handle_generate_website(_, movie_dict: dict[str, dict], ___) -> None:
 
     movie_card_html = generate_movie_html_content(movie_dict)
 
-    # Replace the movie grid placeholder with the same content
+    # Replace the movies grid placeholder with the same content
     html_template = replace_placeholder_with_html_content(
         html_template, PLACEHOLDER_MOVIE_GRID, movie_card_html
     )

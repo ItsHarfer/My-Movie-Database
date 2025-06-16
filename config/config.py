@@ -59,7 +59,7 @@ LABEL_PADDING = 25
 ASTERISK_COUNT = 10  # Used for visual emphasis in CLI
 
 # ====================
-# Rating / movie Settings
+# Rating / movies Settings
 # ====================
 RATING_BASE = 0
 RATING_LIMIT = 10

@@ -45,7 +45,7 @@ def list_movies(user_id: int):
     """
     Retrieves all movies stored in the SQL database and returns them as a dictionary.
 
-    :return: Dictionary of movie titles with associated year, rating, and poster URL.
+    :return: Dictionary of movies titles with associated year, rating, and poster URL.
     """
     with engine.connect() as connection:
         result = connection.execute(
@@ -72,10 +72,10 @@ def add_movie(
     user_id: int, new_movie_title: str, attributes: dict[str, float | int]
 ) -> None:
     """
-    Adds a new movie record to the SQL database with the provided attributes.
+    Adds a new movies record to the SQL database with the provided attributes.
 
     :param user_id:
-    :param new_movie_title: Title of the movie to be added.
+    :param new_movie_title: Title of the movies to be added.
     :param attributes: Dictionary containing "year", "rating", and "poster_url".
     :return: None. Prints a success or error message.
     """
@@ -108,10 +108,10 @@ def add_movie(
 
 def delete_movie(user_id, title):
     """
-    Deletes a movie entry from the SQL database based on its title.
+    Deletes a movies entry from the SQL database based on its title.
 
     :param user_id:
-    :param title: The title of the movie to delete.
+    :param title: The title of the movies to delete.
     :return: None. Prints a success or error message.
     """
     with engine.connect() as connection:
@@ -130,13 +130,13 @@ def delete_movie(user_id, title):
 
 def update_movie(user_id, title, note, is_favorite):
     """
-    Updates the note of an existing movie in the SQL database.
+    Updates the note of an existing movies in the SQL database.
 
 
-    :param user_id: ID of the user who owns the movie.
-    :param title: Title of the movie to update.
-    :param note: New note to associate with the movie.
-    :param is_favorite: Boolean is indicating whether the movie is a favorite.
+    :param user_id: ID of the user who owns the movies.
+    :param title: Title of the movies to update.
+    :param note: New note to associate with the movies.
+    :param is_favorite: Boolean is indicating whether the movies is a favorite.
     :return: None. Prints a success or error message.
     """
     with engine.connect() as connection:

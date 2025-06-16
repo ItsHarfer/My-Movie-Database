@@ -24,7 +24,7 @@ def execute_operation(user_input: int, data: dict, dispatcher: dict[int, dict]) 
     Executes the selected command from the user by invoking the corresponding handler out from the dispatcher.
 
     :param user_input: Index of the selected menu command.
-    :param data: Context data passed to the handler (e.g., user or movie data).
+    :param data: Context data passed to the handler (e.g., user or movies data).
     :param dispatcher: Mapping of menu indices to command handler definitions.
     :return: True if the handler was successfully executed, False otherwise.
     """

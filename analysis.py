@@ -1,15 +1,15 @@
 """
 analysis.py
 
-Provides statistical and analytical functions for the movie database application.
+Provides statistical and analytical functions for the movies database application.
 
 This module includes logic for calculating key metrics and insights such as:
-- Average and median movie ratings
+- Average and median movies ratings
 - Movies with the highest or lowest ratings
-- Random movie selection
+- Random movies selection
 - Summation of arbitrary numeric attributes
 
-These functions are read-only and do not modify the provided movie dictionary.
+These functions are read-only and do not modify the provided movies dictionary.
 
 They are primarily invoked by handler functions to generate statistics and analysis
 outputs for user-facing features.
@@ -64,7 +64,7 @@ def get_calculated_median_rate(
     """
     Calculates the median rating of all movies in the database.
 
-    :param movie_dict: Dictionary of movie titles and their ratings.
+    :param movie_dict: Dictionary of movies titles and their ratings.
     :return: The median rating as a float or int, or None if the input is empty.
     """
     if not movie_dict:
@@ -127,10 +127,10 @@ def get_random_movie(
     movie_dict: dict[str, dict[str, float | int]],
 ) -> dict[str, dict[str, float | int]] | None:
     """
-    Selects a random movie from the database.
+    Selects a random movies from the database.
 
     :param movie_dict: Dictionary of movies and ratings.
-    :return: Dictionary containing one randomly selected movie and its details, or None if the input is empty.
+    :return: Dictionary containing one randomly selected movies and its details, or None if the input is empty.
     """
     if not movie_dict:
         return printer.print_colored_output(

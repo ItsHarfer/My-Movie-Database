@@ -1,17 +1,17 @@
 """
 helpers / analysis.py
 
-Provides functionality for sorting and visualizing movie data based on numeric attributes.
+Provides functionality for sorting and visualizing movies data based on numeric attributes.
 
-This module enables statistical analysis and graphical representation of movie attributes,
+This module enables statistical analysis and graphical representation of movies attributes,
 such as rating or release year. It includes functionality for sorting movies and generating
 histograms or scatter plots as PNG files.
 
 Functions:
-- get_movies_sorted_by_attribute: Sorts the movie dictionary by a specified numeric field.
+- get_movies_sorted_by_attribute: Sorts the movies dictionary by a specified numeric field.
 - create_histogram_by_attribute: Generates and saves a histogram or scatter plot for a given attribute.
 
-These utilities support deeper insights into the movie dataset by enabling data-driven exploration.
+These utilities support deeper insights into the movies dataset by enabling data-driven exploration.
 
 Author: Martin Haferanke
 Date: 16.06.2025
@@ -33,7 +33,7 @@ def get_movies_sorted_by_attribute(
     This function takes a dictionary of movies with their associated attributes and
     returns a new dictionary sorted by the specified attribute (e.g., rating, release year).
 
-    :param movie_dict: Dictionary of movie titles and their attribute dictionaries
+    :param movie_dict: Dictionary of movies titles and their attribute dictionaries
     :param attribute: The key of the attribute to sort by (e.g. "rating", "year").
     :param descending: If True, sorts in descending order (highest to lowest).
                        If False, sorts in ascending order. Defaults to True.

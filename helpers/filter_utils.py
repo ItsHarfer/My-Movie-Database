@@ -1,18 +1,18 @@
 """
 helpers / filter_utils.py
 
-Provides filtering and search functionalities for the movie database.
+Provides filtering and search functionalities for the movies database.
 
 This module enables users to search movies by title, filter them based on rating and release year,
-and interactively find a movie by name. All user interactions are handled with consistent
+and interactively find a movies by name. All user interactions are handled with consistent
 CLI feedback using colored output.
 
 Functions:
-- filter_movies_by_search_query: Performs case-insensitive substring search in movie titles.
+- filter_movies_by_search_query: Performs case-insensitive substring search in movies titles.
 - filter_movies_by_attributes: Filters movies by rating and release year and prints the results.
-- find_movie: Prompts the user to input a movie title and confirms its existence.
+- find_movie: Prompts the user to input a movies title and confirms its existence.
 
-These tools enhance the user's ability to quickly locate and extract relevant movie data.
+These tools enhance the user's ability to quickly locate and extract relevant movies data.
 
 Author: Martin Haferanke
 Date: 16.06.2025
@@ -27,14 +27,14 @@ def filter_movies_by_search_query(
     movie_dict: dict[str, dict[str, float | int]], search_query: str
 ) -> dict:
     """
-    Filters the movie dictionary for titles that contain the search query.
+    Filters the movies dictionary for titles that contain the search query.
 
-    Performs a case-insensitive substring search in all movie titles and returns
+    Performs a case-insensitive substring search in all movies titles and returns
     a dictionary of matching entries.
 
-    :param movie_dict: Dictionary of movie titles and their attribute dictionaries.
-    :param search_query: Lowercase string to search for within movie titles.
-    :return: Dictionary of matching movie titles and their attributes.
+    :param movie_dict: Dictionary of movies titles and their attribute dictionaries.
+    :param search_query: Lowercase string to search for within movies titles.
+    :return: Dictionary of matching movies titles and their attributes.
     """
     if not movie_dict:
         print_colored_output("⚠️ No movies available to search.", COLOR_ERROR)
@@ -56,8 +56,8 @@ def filter_movies_by_attributes(
     """
     Filters and displays movies that match the specified rating and release year criteria.
 
-    :param movie_dict: Dictionary of movie titles and their attribute dictionaries
-    :param min_rating: Minimum rating a movie must have to be included.
+    :param movie_dict: Dictionary of movies titles and their attribute dictionaries
+    :param min_rating: Minimum rating a movies must have to be included.
     :param start_year: Earliest release year to include.
     :param end_year: Latest release year to include.
     :return: None
@@ -83,12 +83,12 @@ def filter_movies_by_attributes(
 
 def find_movie(movie_dict: dict[str, dict]) -> str | None:
     """
-    Prompts the user to enter a movie name and returns it if it exists in the database.
+    Prompts the user to enter a movies name and returns it if it exists in the database.
 
-    Repeats input prompt until a matching movie title is found.
+    Repeats input prompt until a matching movies title is found.
 
-    :param movie_dict: Dictionary of movie titles and their attribute dictionaries.
-    :return: The title of the selected movie, or None if no movies exist.
+    :param movie_dict: Dictionary of movies titles and their attribute dictionaries.
+    :return: The title of the selected movies, or None if no movies exist.
     """
     if not movie_dict:
         return print_colored_output(
@@ -97,7 +97,7 @@ def find_movie(movie_dict: dict[str, dict]) -> str | None:
 
     while True:
         movie_to_update = get_colored_input(
-            "Enter the name of the movie you want to update: "
+            "Enter the name of the movies you want to update: "
         )
         if movie_to_update not in movie_dict:
             print_colored_output("❌ Movie not found. Please try again.", COLOR_ERROR)

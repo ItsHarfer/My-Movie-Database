@@ -1,11 +1,11 @@
 """
 printers.py
 
-Handles all formatted and colored output for the movie database application.
+Handles all formatted and colored output for the movies database application.
 
 This module centralizes presentation logic, including:
 - Displaying titles, prompts, and status messages with color
-- Printing movie data, statistics, and search results
+- Printing movies data, statistics, and search results
 - Ensuring consistent visual formatting across the CLI
 
 Separating these responsibilities helps maintain a clean structure and supports consistent UI behavior.
@@ -54,9 +54,9 @@ def print_movie_count(total_movie_count: int) -> None:
 
 def print_all_movies(movie_dict: dict[str, dict[str, float | int]]) -> None:
     """
-    Displays the total number of movies and prints each movie with its rating and release year.
+    Displays the total number of movies and prints each movies with its rating and release year.
 
-    :param movie_dict: Dictionary of movie titles and their release years and ratings.
+    :param movie_dict: Dictionary of movies titles and their release years and ratings.
     :return: None
     """
     total_movie_count = len(movie_dict)
@@ -89,8 +89,8 @@ def print_movies_statistics(
 
     :param average_rate: The average rating of all movies.
     :param median_rate: The median rating of all movies.
-    :param best_movies: Dictionary of the best-rated movie(s) and their attributes.
-    :param worst_movies: Dictionary of the worst-rated movie(s) and their attributes.
+    :param best_movies: Dictionary of the best-rated movies(s) and their attributes.
+    :param worst_movies: Dictionary of the worst-rated movies(s) and their attributes.
     :return: None
     """
     print_title("Movie Statistics")
@@ -100,19 +100,19 @@ def print_movies_statistics(
     print_colored_output(f"Median rating: ", COLOR_SUB_TITLE, end="")
     print_colored_output(f"{median_rate:.1f}", COLOR_VALUES)
 
-    print_colored_output(f"Best movie(s): ", COLOR_SUB_TITLE)
+    print_colored_output(f"Best movies(s): ", COLOR_SUB_TITLE)
     print_movies(best_movies)
 
-    print_colored_output(f"Worst movie(s): ", COLOR_SUB_TITLE)
+    print_colored_output(f"Worst movies(s): ", COLOR_SUB_TITLE)
     print_movies(worst_movies)
 
 
 def print_movie(title: str, movie: dict) -> None:
     """
-    Displays a formatted line with the movie's title, release year, and rating.
+    Displays a formatted line with the movies's title, release year, and rating.
 
-    :param title: The title of the movie.
-    :param movie: Dictionary containing movie attributes like 'release', 'rating', and optional others.
+    :param title: The title of the movies.
+    :param movie: Dictionary containing movies attributes like 'release', 'rating', and optional others.
     :return: None
     """
     year = movie.get("year", "unknown")
@@ -137,9 +137,9 @@ def print_movie(title: str, movie: dict) -> None:
 
 def print_movies(movie_dict: dict[str, dict[str, float | int]]) -> None:
     """
-    Prints movie(s) and their ratings from the given dictionary.
+    Prints movies(s) and their ratings from the given dictionary.
 
-    :param movie_dict: Dictionary of movie titles and their details.
+    :param movie_dict: Dictionary of movies titles and their details.
     """
     if not movie_dict:
         print_colored_output("❌ No movies to print.", COLOR_ERROR)
@@ -152,7 +152,7 @@ def print_search_results(matches: dict[str, dict[str, float | int]]) -> None:
     """
     Prints the search results or a message if no match is found.
 
-    :param matches: Dictionary of matched movie titles and their attributes.
+    :param matches: Dictionary of matched movies titles and their attributes.
     :return: None
     """
     if not matches:

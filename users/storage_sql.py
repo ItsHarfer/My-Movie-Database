@@ -28,7 +28,7 @@ DB_URL = "sqlite:///data/movies.db"
 engine = create_engine(DB_URL, echo=False)
 
 
-# Create the movie table if it does not exist
+# Create the movies table if it does not exist
 with engine.connect() as connection:
     connection.execute(text(SQL_CREATE_USERS_TABLE))
     connection.commit()

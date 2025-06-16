@@ -20,12 +20,12 @@ Each command is associated with:
 Available Commands:
 0  - Quit application
 1  - List movies
-2  - Add movie
-3  - Delete movie
-4  - Update movie
+2  - Add movies
+3  - Delete movies
+4  - Update movies
 5  - Stats
-6  - Random movie
-7  - Search movie
+6  - Random movies
+7  - Search movies
 8  - Movies sorted by an attribute you choose
 9  - Create Rating Histogram
 10 - Show only movies matching your rating and year criteria
@@ -36,7 +36,7 @@ Author: Martin Haferanke
 Date: 16.06.2025
 """
 
-from movie.handler import (
+from movies.handler import (
     handle_quit_application,
     handle_show_movies,
     handle_add_movie,
@@ -52,7 +52,7 @@ from movie.handler import (
 )
 from users.handler import handle_switch_user
 
-# Dispatcher mapping for movie operations
+# Dispatcher mapping for movies operations
 MOVIE_COMMAND_DISPATCHER = {
     0: {
         "handler": handle_quit_application,
@@ -66,17 +66,17 @@ MOVIE_COMMAND_DISPATCHER = {
     },
     2: {
         "handler": handle_add_movie,
-        "label": "Add movie",
+        "label": "Add movies",
         "args": None,
     },
     3: {
         "handler": handle_delete_movie,
-        "label": "Delete movie",
+        "label": "Delete movies",
         "args": None,
     },
     4: {
         "handler": handle_update_movie,
-        "label": "Update a movie with new personal details",
+        "label": "Update a movies with new personal details",
         "args": None,
     },
     5: {
@@ -86,12 +86,12 @@ MOVIE_COMMAND_DISPATCHER = {
     },
     6: {
         "handler": handle_random_movie,
-        "label": "Random movie",
+        "label": "Random movies",
         "args": None,
     },
     7: {
         "handler": handle_search_movie,
-        "label": "Search movie",
+        "label": "Search movies",
         "args": None,
     },
     8: {
