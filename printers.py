@@ -121,8 +121,13 @@ def print_movie(title: str, movie: dict) -> None:
     poster_url = movie.get("poster_url", "unknown")
     imdb_id = movie.get("imdb_id", "")
     country = movie.get("country", "")
+    is_favorite = movie.get("is_favorite", False)
 
-    print_colored_output(f"- {title} ({year}): ", COLOR_TITLE, end="")
+    print_colored_output(
+        f"- {title} ({year}){' (Favorite)' if is_favorite else ''}: ",
+        COLOR_TITLE,
+        end="",
+    )
     print_colored_output(f"{rating} ", COLOR_VALUES, end="")
     print_colored_output(f"Poster: {poster_url}", COLOR_SUCCESS, end="")
     print_colored_output(f" Note: {note}", COLOR_SUB_TITLE, end="")

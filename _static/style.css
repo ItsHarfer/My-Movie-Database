@@ -34,6 +34,28 @@ body {
   width: 140px;
 }
 
+.favorite {
+  border: 2px solid gold;
+  box-shadow: 0 0 10px gold;
+  border-radius: 8px;
+  position: relative;
+}
+
+.favorite-icon {
+    position: absolute;
+    top: 8px;
+    left: 7px;
+    z-index: 10;
+    width: 20px;
+    height: 20px;
+    background-color: #F5F5EF;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8em;
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.7);
+}
 .movie-title,
 .movie-year {
   font-size: 0.8em;
@@ -122,3 +144,4 @@ body {
   overflow: hidden;
   color: gold;
 }
+

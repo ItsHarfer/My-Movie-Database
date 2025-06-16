@@ -1,5 +1,5 @@
 """
-users.py
+session_user.py
 
 Manages the currently active user in the Movie Database application.
 
